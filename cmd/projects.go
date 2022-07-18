@@ -59,16 +59,18 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		folders := InitializeProjects()
-		selected := utils.LaunchFuzzyFinder(folders)
-		parts := strings.Split(selected, "/")
-		selectedName := parts[len(parts)-1]
+		selected, err := utils.LaunchFuzzyFinder(folders)
+		if err == nil {
+			parts := strings.Split(selected, "/")
+			selectedName := parts[len(parts)-1]
 
-		utils.TmuxCreateWindow("kc", selectedName)
+			utils.TmuxCreateWindow("kc", selectedName)
 
-		utils.TmuxSendKeys("kc", selectedName, "cd "+selected)
-		utils.TmuxSendKeys("kc", selectedName, "clear")
+			utils.TmuxSendKeys("kc", selectedName, "cd "+selected)
+			utils.TmuxSendKeys("kc", selectedName, "clear")
 
-		utils.TmuxAttachOrSelectWindow("kc", selectedName)
+			utils.TmuxAttachOrSelectWindow("kc", selectedName)
+		}
 
 	},
 }

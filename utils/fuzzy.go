@@ -1,11 +1,10 @@
 package utils
 
 import (
-	"fmt"
 	"github.com/ktr0731/go-fuzzyfinder"
 )
 
-func LaunchFuzzyFinder(objects []string) string {
+func LaunchFuzzyFinder(objects []string) (string, error) {
 	idx, err := fuzzyfinder.Find(
 		objects,
 		func(i int) string {
@@ -14,9 +13,9 @@ func LaunchFuzzyFinder(objects []string) string {
 	)
 
 	if err != nil {
-		fmt.Println(err)
+		return "", err
 	}
 
-	return objects[idx]
+	return objects[idx], nil
 
 }

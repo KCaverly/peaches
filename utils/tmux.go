@@ -87,13 +87,13 @@ func TmuxWindowExists(sessionName string, windowName string) (bool, error) {
 func TmuxCreateSession(sessionName string) (bool, error) {
 
 	// Do not recreate the session if one exists
-	session_exists, err := TmuxSessionExists(sessionName)
+	sessionExists, err := TmuxSessionExists(sessionName)
 	if err != nil {
 
 		return false, err
 	}
 
-	if session_exists {
+	if sessionExists {
 		return true, nil
 
 	} else {
@@ -148,13 +148,13 @@ func TmuxCreateWindow(sessionName string, windowName string) (bool, error) {
 
 func TmuxAttachOrSelectWindow(sessionName string, windowName string) (bool, error) {
 
-	window_exists, err := TmuxCreateWindow(sessionName, windowName)
+	windowExists, err := TmuxCreateWindow(sessionName, windowName)
 
 	if err != nil {
 		return false, err
 	}
 
-	if window_exists && InTmux() {
+	if windowExists && InTmux() {
 		tmux, _ := exec.LookPath("tmux")
 		args := []string{"tmux", "switch", "-t", sessionName, ":", windowName}
 		err := syscall.Exec(tmux, args, os.Environ())
@@ -163,7 +163,7 @@ func TmuxAttachOrSelectWindow(sessionName string, windowName string) (bool, erro
 		}
 
 		return true, nil
-	} else if window_exists && !InTmux() {
+	} else if windowExists && !InTmux() {
 		tmux, _ := exec.LookPath("tmux")
 		args := []string{"tmux", "attach", "-t", sessionName}
 		err := syscall.Exec(tmux, args, os.Environ())
