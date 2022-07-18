@@ -24,7 +24,7 @@ func InitializeProjects() []string {
 		{"/home/kcaverly/work", 2},
 	}
 
-	ignore_dirs := []string{".git"}
+	ignore_dirs := []string{".git", "tmp"}
 
 	var folders []string
 	for _, dir := range dirs {
@@ -60,9 +60,15 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		folders := InitializeProjects()
 		selected := utils.LaunchFuzzyFinder(folders)
-
 		parts := strings.Split(selected, "/")
-		utils.TmuxAttachOrSelectWindow("kc", parts[len(parts)-1])
+		selectedName := parts[len(parts)-1]
+
+		utils.TmuxCreateWindow("kc", selectedName)
+
+		utils.TmuxSendKeys("kc", selectedName, "cd "+selected)
+		utils.TmuxSendKeys("kc", selectedName, "clear")
+
+		utils.TmuxAttachOrSelectWindow("kc", selectedName)
 
 	},
 }

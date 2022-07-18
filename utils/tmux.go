@@ -18,11 +18,8 @@ func TmuxActive() (bool, error) {
 		return true, nil
 	}
 
-	cmd := exec.Command("tmux", "info", "2>&1")
-	res, err := cmd.CombinedOutput()
-	if err != nil {
-		return false, nil
-	}
+	cmd := exec.Command("tmux", "info", "-t", "/dev/pts/1")
+	res, _ := cmd.CombinedOutput()
 
 	if strings.Contains(string(res), "no server") {
 		return false, nil
@@ -64,12 +61,12 @@ func TmuxSessionExists(sessionName string) (bool, error) {
 func TmuxWindowExists(sessionName string, windowName string) (bool, error) {
 
 	// In Order for The Window to Exist, the Session Must Aswell
-	session_exists, err := TmuxSessionExists(sessionName)
+	sessionExists, err := TmuxSessionExists(sessionName)
 	if err != nil {
 		return false, nil
 	}
 
-	if session_exists {
+	if sessionExists {
 
 		cmd := exec.Command("tmux", "has-session", "-t", sessionName+":"+windowName)
 		res, _ := cmd.CombinedOutput()
@@ -114,22 +111,22 @@ func TmuxCreateSession(sessionName string) (bool, error) {
 func TmuxCreateWindow(sessionName string, windowName string) (bool, error) {
 
 	// If Window Exists, do not create window
-	window_exists, err := TmuxWindowExists(sessionName, windowName)
+	windowExists, err := TmuxWindowExists(sessionName, windowName)
 	if err != nil {
 		return false, err
 	}
 
 	// If Session Exists, do not recreate Session
-	session_exists, err := TmuxSessionExists(sessionName)
+	sessionExists, err := TmuxSessionExists(sessionName)
 	if err != nil {
 		return false, err
 	}
 
-	if window_exists {
+	if windowExists {
 		return true, nil
-	} else if session_exists {
+	} else if sessionExists {
 		cmd := exec.Command("tmux", "new-window", "-t", sessionName, "-n", windowName)
-		_, err := cmd.Output()
+		_, err := cmd.CombinedOutput()
 		if err != nil {
 			return false, err
 		}
@@ -177,4 +174,19 @@ func TmuxAttachOrSelectWindow(sessionName string, windowName string) (bool, erro
 	}
 
 	return false, nil
+}
+
+func TmuxSendKeys(sessionName, windowName string, sendKeys string) (bool, error) {
+
+	cmd := exec.Command("tmux", "send-keys", "-t", sessionName+":"+windowName, sendKeys, "C-m")
+	_, err := cmd.CombinedOutput()
+
+	if err != nil {
+		return false, err
+	} else {
+		return true, nil
+	}
+
+	return false, nil
+
 }
