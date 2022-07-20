@@ -18,30 +18,17 @@ type Directory struct {
 func InitializeProjects() []string {
 
 	dirs := []Directory{
+		{"/home/kcaverly/work", 2},
 		{"/home/kcaverly/personal", 1},
 		{"/home/kcaverly/personal/courses", 1},
 		{"/home/kcaverly/.dotfiles", 3},
-		{"/home/kcaverly/work", 2},
 	}
-
-	ignore_dirs := []string{".git", "tmp"}
 
 	var folders []string
 	for _, dir := range dirs {
-		new_folders, _ := utils.GetFolders(dir.path, dir.maxDepth)
-
-		for _, folder := range new_folders {
-			cnt := 0
-			for _, ignore := range ignore_dirs {
-				if strings.Contains(folder, ignore) {
-					cnt += 1
-				}
-			}
-			if cnt == 0 {
-				folders = append(folders, folder)
-			}
-		}
-
+		excludeList := []string{`.git\.*`, `__pycache__\.*`, `tmp\.*`}
+		new_folders, _ := utils.GetFolders(dir.path, excludeList, dir.maxDepth)
+		folders = append(folders, new_folders...)
 	}
 
 	return folders
