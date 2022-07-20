@@ -1,0 +1,13 @@
+- name: git | Configure user email
+  tags: [ install ]
+  git_config:
+    name: user.email
+    scope: global
+    value: "sampleemail@gmail.com"
+
+- name: git | Configure user
+  tags: [ install ]
+  git_config:
+    name: user.name
+    scope: global
+    value: "KCaverly"

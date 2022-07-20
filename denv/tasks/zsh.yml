@@ -1,0 +1,13 @@
+- name: zsh | Install zsh
+  tags: [ install ]
+  apt: name=zsh
+
+- name: zsh | Change Default Shell to zsh
+  tags: [ install ]
+  shell: chsh -s $(which zsh)
+  register: zsh_output
+
+- name: zsh | Install oh-my-zsh
+  tags: [ install ]
+  include_role:
+    name: gantsign.oh-my-zsh
