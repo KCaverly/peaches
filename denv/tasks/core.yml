@@ -1,4 +1,0 @@
-- name: core | Install core utilities
-  tags: [ install ]
-  apt:
-    name: ["stow", "curl", "tar", "htop", "ripgrep", "sqlite", "tmux"]

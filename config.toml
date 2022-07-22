@@ -1,0 +1,12 @@
+title = "peaches"
+
+[tmux]
+session = "kc"
+
+[projects]
+paths = ["/home/kcaverly/work", "/home/kcaverly/personal", "/home/kcaverly/.dotfiles", "/home/kcaverly/personal/courses"]
+maxDepth = [2, 1, 1, 1]
+exclude = [".git\\.*", "__pycache__\\.*", "tmp\\.*"]
+
+[ssh]
+hosts = "/home/kcaverly/.ssh/config"

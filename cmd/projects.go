@@ -17,17 +17,15 @@ type Directory struct {
 
 func InitializeProjects() []string {
 
-	dirs := []Directory{
-		{"/home/kcaverly/work", 2},
-		{"/home/kcaverly/personal", 1},
-		{"/home/kcaverly/personal/courses", 1},
-		{"/home/kcaverly/.dotfiles", 3},
+	cfg := utils.LoadConfig()
+	dirs := []Directory{}
+	for i, dir := range cfg.Config.Projects.Paths {
+		dirs = append(dirs, Directory{dir, cfg.Config.Projects.MaxDepth[i]})
 	}
 
 	var folders []string
 	for _, dir := range dirs {
-		excludeList := []string{`.git\.*`, `__pycache__\.*`, `tmp\.*`}
-		new_folders, _ := utils.GetFolders(dir.path, excludeList, dir.maxDepth)
+		new_folders, _ := utils.GetFolders(dir.path, cfg.Config.Projects.Exclude, dir.maxDepth)
 		folders = append(folders, new_folders...)
 	}
 
@@ -45,18 +43,21 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+
+		cfg := utils.LoadConfig()
+
 		folders := InitializeProjects()
 		selected, err := utils.LaunchFuzzyFinder(folders)
 		if err == nil {
 			parts := strings.Split(selected, "/")
 			selectedName := parts[len(parts)-1]
 
-			utils.TmuxCreateWindow("kc", selectedName)
+			utils.TmuxCreateWindow(cfg.Config.Tmux.Session, selectedName)
 
-			utils.TmuxSendKeys("kc", selectedName, "cd "+selected)
-			utils.TmuxSendKeys("kc", selectedName, "clear")
+			utils.TmuxSendKeys(cfg.Config.Tmux.Session, selectedName, "cd "+selected)
+			utils.TmuxSendKeys(cfg.Config.Tmux.Session, selectedName, "clear")
 
-			utils.TmuxAttachOrSelectWindow("kc", selectedName)
+			utils.TmuxAttachOrSelectWindow(cfg.Config.Tmux.Session, selectedName)
 		}
 
 	},

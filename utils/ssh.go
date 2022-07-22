@@ -13,7 +13,9 @@ type SSHHost struct {
 
 func GetSSHHostsInConfig() ([]SSHHost, error) {
 
-	cmd := exec.Command("cat", "/home/kcaverly/.ssh/config")
+	cfg := LoadConfig()
+
+	cmd := exec.Command("cat", cfg.Config.SSH.Hosts)
 	res, err := cmd.CombinedOutput()
 
 	if err != nil {
