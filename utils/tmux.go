@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -179,6 +180,44 @@ func TmuxAttachOrSelectWindow(sessionName string, windowName string) (bool, erro
 func TmuxSendKeys(sessionName, windowName string, sendKeys string) (bool, error) {
 
 	cmd := exec.Command("tmux", "send-keys", "-t", sessionName+":"+windowName, sendKeys, "C-m")
+	_, err := cmd.CombinedOutput()
+
+	if err != nil {
+		return false, err
+	} else {
+		return true, nil
+	}
+
+	return false, nil
+
+}
+
+func TmuxListWindows() (bool, error) {
+
+	cmd := exec.Command("tmux", "list-windows")
+	output, err := cmd.CombinedOutput()
+
+	fmt.Println(string(output))
+
+	windows := string.split(output, "\n")
+
+  for window := range(windows) {
+
+  }
+
+	if err != nil {
+		return false, err
+	} else {
+		return true, nil
+	}
+
+	return false, nil
+
+}
+
+func TmuxSplitWindow(sessionName string, windowName string) (bool, error) {
+
+	cmd := exec.Command("tmux", "split-window")
 	_, err := cmd.CombinedOutput()
 
 	if err != nil {
