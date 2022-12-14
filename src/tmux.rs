@@ -1,9 +1,19 @@
-pub struct TMUX {}
 use std::{env, process, str};
+pub struct TMUX {}
 
 impl TMUX {
     pub fn in_tmux() -> bool {
         return env::var("TMUX").is_ok();
+    }
+
+    pub fn run_tmux_command(args: Vec<&str>) -> bool {
+        let status = process::Command::new("tmux")
+            .args(args)
+            .stdout(process::Stdio::null())
+            .stderr(process::Stdio::null())
+            .status()
+            .unwrap();
+        return status.success();
     }
 
     pub fn active() -> bool {
@@ -33,20 +43,7 @@ impl TMUX {
             return false;
         }
 
-        let output: process::Output = process::Command::new("tmux")
-            .args(vec!["has-session", "-t", session_name])
-            .output()
-            .unwrap()
-            .into();
-
-        if str::from_utf8(&output.stdout)
-            .unwrap()
-            .contains("can't find session")
-        {
-            return false;
-        }
-
-        return true;
+        return Self::run_tmux_command(vec!["has-session", "-t", session_name]);
     }
 
     pub fn window_exists(session_name: &str, window_name: &str) -> bool {
@@ -55,23 +52,89 @@ impl TMUX {
             return false;
         }
 
-        let output: process::Output = process::Command::new("tmux")
-            .args(vec![
-                "has-session",
-                "-t",
-                &format!("{session_name}:{window_name}"),
-            ])
-            .output()
-            .unwrap()
-            .into();
+        return Self::run_tmux_command(vec![
+            "has-session",
+            "-t",
+            &format!("{session_name}:{window_name}"),
+        ]);
+    }
 
-        if str::from_utf8(&output.stdout)
-            .unwrap()
-            .contains("can't find window")
-        {
-            return false;
+    pub fn create_session(session_name: &str) -> bool {
+        // Do not recreate the session if one exists
+        if Self::session_exists(session_name) {
+            return true;
         }
 
-        return true;
+        return Self::run_tmux_command(vec!["new-session", "-d", "-s", session_name]);
+    }
+
+    pub fn create_window(session_name: &str, window_name: &str) -> bool {
+        // Do not recreate window if one exists
+        if Self::window_exists(session_name, window_name) {
+            return true;
+        }
+
+        // If session exists, do not recreate Session
+        if Self::session_exists(session_name) {
+            return Self::run_tmux_command(vec![
+                "new-window",
+                "-t",
+                session_name,
+                "-n",
+                window_name,
+            ]);
+        }
+
+        // Create Session and Window in Detached State
+        return Self::run_tmux_command(vec![
+            "new-session",
+            "-d",
+            "-s",
+            session_name,
+            "-n",
+            window_name,
+        ]);
+    }
+
+    pub fn attach_or_select_window(session_name: &str, window_name: &str) -> bool {
+        if !Self::window_exists(session_name, window_name) {
+            panic!("Window Doesnt Exist!, Please create window first!");
+        }
+
+        if Self::in_tmux() {
+            let o = process::Command::new("tmux")
+                .args(vec![
+                    "switch",
+                    "-t",
+                    &format!("{session_name}:{window_name}"),
+                ])
+                .spawn()
+                .expect("FAILED TO ATTACH")
+                .wait();
+            return true;
+        } else {
+            let o = process::Command::new("tmux")
+                .args(vec![
+                    "attach",
+                    "-t",
+                    &format!("{session_name}:{window_name}"),
+                ])
+                .spawn()
+                .expect("FAILED TO ATTACH")
+                .wait();
+            return true;
+        }
+
+        return false;
+    }
+
+    pub fn send_keys(session_name: &str, window_name: &str, keys: &str) -> bool {
+        return Self::run_tmux_command(vec![
+            "send-keys",
+            "-t",
+            &format!("{session_name}:{window_name}"),
+            keys,
+            "C-m",
+        ]);
     }
 }

@@ -1,4 +1,5 @@
 mod tmux;
+mod projects;
 // use skim::prelude::*;
 // use std::fs;
 // use std::io;
@@ -16,9 +17,57 @@ mod tmux;
 
 fn main() {
     println!("In Tmux: {}", tmux::TMUX::in_tmux());
-    println!("Session Exists: {}", tmux::TMUX::session_exists("kc"));
-    println!("Window Exists: {}", tmux::TMUX::window_exists("kc", "peaches"));
-    // let project_paths: Vec<String> = folders(path::Path::new("/home/kcaverly/personal"))
+
+    println!(
+        "(TRUE) Session Exists: {}",
+        tmux::TMUX::session_exists("kc")
+    );
+    println!(
+        "(FALSE) Session Exists: {}",
+        tmux::TMUX::session_exists("test")
+    );
+
+    println!(
+        "(TRUE) Window Exists: {}",
+        tmux::TMUX::window_exists("kc", "peaches")
+    );
+    println!(
+        "(FALSE) Window Exists: {}",
+        tmux::TMUX::window_exists("kc", "test")
+    );
+    println!(
+        "(FALSE) Window Exists: {}",
+        tmux::TMUX::window_exists("test", "test")
+    );
+
+    println!(
+        "(TRUE) Create Session: {}",
+        tmux::TMUX::create_session("test")
+    );
+    println!(
+        "(TRUE) Session Exists: {}",
+        tmux::TMUX::session_exists("test")
+    );
+
+    println!(
+        "(TRUE) Create Window: {}",
+        tmux::TMUX::create_window("test", "test")
+    );
+    println!(
+        "(TRUE) Create Window: {}",
+        tmux::TMUX::create_window("test2", "test")
+    );
+
+    println!("{}", tmux::TMUX::attach_or_select_window("kc", "gma_cs"));
+    println!("{}", tmux::TMUX::attach_or_select_window("test2", "test"));
+    println!(
+        "{}",
+        tmux::TMUX::send_keys("test2", "test", "echo 'hi kyle'")
+    );
+
+    // println!("Window Exists: {}", tmux::TMUX::window_exists("kc", "test"));
+    // // let project_paths: Vec<String> = folders(path::Path::new("/home/kcaverly/personal"))
+    // println!("Create Window: {}", tmux::TMUX::create_window("kc", "test"));
     //     .unwrap()
     //     .iter()
     //     .map(|x| x.as_path().to_str().unwrap().to_string())
