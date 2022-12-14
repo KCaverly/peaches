@@ -16,6 +16,8 @@ mod tmux;
 
 fn main() {
     println!("In Tmux: {}", tmux::TMUX::in_tmux());
+    println!("Session Exists: {}", tmux::TMUX::session_exists("kc"));
+    println!("Window Exists: {}", tmux::TMUX::window_exists("kc", "peaches"));
     // let project_paths: Vec<String> = folders(path::Path::new("/home/kcaverly/personal"))
     //     .unwrap()
     //     .iter()
