@@ -1,5 +1,5 @@
-mod tmux;
 mod projects;
+mod tmux;
 // use skim::prelude::*;
 // use std::fs;
 // use std::io;
@@ -16,82 +16,14 @@ mod projects;
 // }
 
 fn main() {
-    println!("In Tmux: {}", tmux::TMUX::in_tmux());
+    // Get Files and Search
+    let files = projects::get_files();
+    let selected = projects::search_options(files);
+    let name = selected.split("/").last().unwrap();
 
-    println!(
-        "(TRUE) Session Exists: {}",
-        tmux::TMUX::session_exists("kc")
-    );
-    println!(
-        "(FALSE) Session Exists: {}",
-        tmux::TMUX::session_exists("test")
-    );
-
-    println!(
-        "(TRUE) Window Exists: {}",
-        tmux::TMUX::window_exists("kc", "peaches")
-    );
-    println!(
-        "(FALSE) Window Exists: {}",
-        tmux::TMUX::window_exists("kc", "test")
-    );
-    println!(
-        "(FALSE) Window Exists: {}",
-        tmux::TMUX::window_exists("test", "test")
-    );
-
-    println!(
-        "(TRUE) Create Session: {}",
-        tmux::TMUX::create_session("test")
-    );
-    println!(
-        "(TRUE) Session Exists: {}",
-        tmux::TMUX::session_exists("test")
-    );
-
-    println!(
-        "(TRUE) Create Window: {}",
-        tmux::TMUX::create_window("test", "test")
-    );
-    println!(
-        "(TRUE) Create Window: {}",
-        tmux::TMUX::create_window("test2", "test")
-    );
-
-    println!("{}", tmux::TMUX::attach_or_select_window("kc", "gma_cs"));
-    println!("{}", tmux::TMUX::attach_or_select_window("test2", "test"));
-    println!(
-        "{}",
-        tmux::TMUX::send_keys("test2", "test", "echo 'hi kyle'")
-    );
-
-    // println!("Window Exists: {}", tmux::TMUX::window_exists("kc", "test"));
-    // // let project_paths: Vec<String> = folders(path::Path::new("/home/kcaverly/personal"))
-    // println!("Create Window: {}", tmux::TMUX::create_window("kc", "test"));
-    //     .unwrap()
-    //     .iter()
-    //     .map(|x| x.as_path().to_str().unwrap().to_string())
-    //     .filter(|x| !x.starts_with("."))
-    //     .collect();
-    //
-    // let search_string: String = project_paths.join("\n");
-    // let options = SkimOptionsBuilder::default()
-    //     .height(Some("50%"))
-    //     .multi(true)
-    //     .build()
-    //     .unwrap();
-    //
-    // // `SkimItemReader` is a helper to turn any `BufRead` into a stream of `SkimItem`
-    // // `SkimItem` was implemented for `AsRef<str>` by default
-    // let item_reader = SkimItemReader::default();
-    // let items = item_reader.of_bufread(Cursor::new(search_string));
-    //
-    // // `run_with` would read and show items from the stream
-    // let selected_items = Skim::run_with(&options, Some(items))
-    //     .map(|out| out.selected_items)
-    //     .unwrap_or_else(|| Vec::new());
-    //
-    // for item in selected_items.iter() {
-    //     print!("{}", item.output());
-    // }
+    // Launch Project
+    tmux::TMUX::create_session("kc");
+    tmux::TMUX::create_window("kc", name);
+    tmux::TMUX::attach_or_select_window("kc", name);
+    tmux::TMUX::send_keys("kc", name, &format!("cd {selected} && clear"));
 }
