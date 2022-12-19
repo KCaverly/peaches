@@ -10,3 +10,4 @@ walkdir = "2"
 skim = "*"
 itertools = "*"
 sc = "*"
+clap = { version = "4.0.29", features = ["derive"] }
