@@ -1,6 +1,7 @@
 use skim::prelude::*;
 use std::io;
 use std::io::Cursor;
+use std::process::exit;
 use walkdir::{DirEntry, WalkDir};
 
 fn folders(path: &str, max_depth: u8) -> Result<Vec<DirEntry>, io::Error> {
@@ -53,6 +54,9 @@ pub fn get_files() -> Vec<String> {
                     !x.starts_with(".")
                 }
             })
+            .map(|x| x.to_string())
+            .filter(|x| !x.contains(".git"))
+            .filter(|x| !x.contains("bin"))
             .collect();
 
         for file in dir_files.iter() {
@@ -68,20 +72,26 @@ pub fn get_files() -> Vec<String> {
 pub fn search_options(search_options: Vec<String>) -> String {
     let search_string: String = search_options.join("\n");
     let options = SkimOptionsBuilder::default()
-        .height(Some("50%"))
-        .multi(false)
         .build()
         .unwrap();
 
     let item_reader = SkimItemReader::default();
     let items = item_reader.of_bufread(Cursor::new(search_string));
     let selected_item = Skim::run_with(&options, Some(items))
+        .filter(|out| !out.is_abort)
         .map(|out| out.selected_items)
         .unwrap_or_else(|| Vec::new());
 
-    return selected_item
+    // If no item selected, exit silently.
+    if selected_item.len() == 0 {
+        exit(0)
+    }
+
+    let option = selected_item
         .first()
         .expect("No Option Selected!")
         .output()
         .to_string();
+
+    return option;
 }

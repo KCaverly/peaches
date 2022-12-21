@@ -23,10 +23,10 @@ fn run_projects() {
     let name = selected.split("/").last().unwrap();
 
     // Launch Project
-    tmux::TMUX::create_session("kc");
     tmux::TMUX::create_window("kc", name);
+    tmux::TMUX::create_session("kc");
     tmux::TMUX::attach_or_select_window("kc", name);
-    tmux::TMUX::send_keys("kc", name, &format!("cd {selected} && clean"));
+    tmux::TMUX::send_keys("kc", name, &format!("cd {selected} && clear"));
 }
 
 fn main() {
