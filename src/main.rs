@@ -1,3 +1,4 @@
+mod config;
 mod projects;
 mod tmux;
 
@@ -58,6 +59,8 @@ fn run_projects() {
 }
 
 fn main() {
+    config::load_config();
+
     let value = Value::parse();
 
     match &value.commands {
