@@ -102,7 +102,7 @@ impl TMUX {
         }
 
         if Self::in_tmux() {
-            let o = process::Command::new("tmux")
+            let _o = process::Command::new("tmux")
                 .args(vec![
                     "switch",
                     "-t",
@@ -113,7 +113,7 @@ impl TMUX {
                 .wait();
             return true;
         } else {
-            let o = process::Command::new("tmux")
+            let _o = process::Command::new("tmux")
                 .args(vec![
                     "attach",
                     "-t",
@@ -124,8 +124,6 @@ impl TMUX {
                 .wait();
             return true;
         }
-
-        return false;
     }
 
     pub fn send_keys(session_name: &str, window_name: &str, keys: &str) -> bool {

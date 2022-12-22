@@ -2,7 +2,6 @@ mod projects;
 mod tmux;
 
 use clap::{Parser, Subcommand};
-use std::io;
 use std::process::{Command, Stdio};
 use std::str;
 
@@ -54,9 +53,8 @@ fn run_projects() {
 
     // Launch Project
     tmux::TMUX::create_window("kc", name);
-    tmux::TMUX::create_session("kc");
-    tmux::TMUX::attach_or_select_window("kc", name);
     tmux::TMUX::send_keys("kc", name, &format!("cd {selected} && clear"));
+    tmux::TMUX::attach_or_select_window("kc", name);
 }
 
 fn main() {
