@@ -19,6 +19,12 @@ enum Commands {
     Projects {},
     /// Upgrade peaches to latest version available on github
     Upgrade {},
+    /// Initialize config file
+    Config {},
+}
+
+fn run_config() {
+    config::generate_config();
 }
 
 fn run_upgrade() {
@@ -66,17 +72,19 @@ fn run_projects(cfg: &config::Config) {
 }
 
 fn main() {
-    let cfg: config::Config = config::load_config();
-    println!("{:#?}", cfg);
-
     let value = Value::parse();
 
     match &value.commands {
         Commands::Projects {} => {
+            let cfg: config::Config = config::load_config();
             run_projects(&cfg);
         }
         Commands::Upgrade {} => {
             run_upgrade();
+        }
+
+        Commands::Config {} => {
+            run_config();
         }
     }
 }

@@ -1,5 +1,5 @@
 use serde::Deserialize;
-use std::collections::HashMap;
+use std::{collections::HashMap, env, fs};
 use toml;
 
 #[derive(Debug, Deserialize)]
@@ -16,7 +16,36 @@ pub struct Project {
     pub include_hidden: bool,
 }
 
+fn get_peaches_path() -> String {
+    let mut peaches_path: String = env::var("HOME").ok().unwrap();
+    peaches_path.push_str("/.peaches");
+    if env::var("PEACHES_PATH").is_ok() {
+        peaches_path = env::var("PEACHES_PATH").ok().unwrap();
+    }
+
+    return peaches_path;
+}
+
+pub fn generate_config() {
+    const DEFAULT_CONFIG: &str = r#"
+[projects]
+    [projects.default]
+    session_name = "default"
+    directory = "~"
+    min_depth = 1
+    max_depth = 1
+    include_hidden = false
+"#;
+
+    let peaches_path = get_peaches_path();
+    fs::write(peaches_path, DEFAULT_CONFIG).expect("Unable to write file");
+}
+
 pub fn load_config() -> Config {
+    let peaches_path = get_peaches_path();
+
+    let config_string: String = fs::read_to_string(peaches_path).ok().unwrap();
+
     const TEXT: &str = r#"
 
     [projects]
@@ -43,7 +72,7 @@ pub fn load_config() -> Config {
 
     "#;
 
-    let config: Config = toml::from_str(TEXT).unwrap();
+    let config: Config = toml::from_str(&config_string).unwrap();
     // println!("{:#?}", config);
     return config;
 }
