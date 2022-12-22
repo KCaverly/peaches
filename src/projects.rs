@@ -1,12 +1,14 @@
 use skim::prelude::*;
-use std::io;
 use std::io::Cursor;
 use std::process::exit;
+use std::{collections::HashMap, io};
 use walkdir::{DirEntry, WalkDir};
 
-fn folders(path: &str, max_depth: u8) -> Result<Vec<DirEntry>, io::Error> {
+use crate::config::Project;
+
+fn folders(path: &str, min_depth: u8, max_depth: u8) -> Result<Vec<DirEntry>, io::Error> {
     Ok(WalkDir::new(path)
-        .min_depth(max_depth.into())
+        .min_depth(min_depth.into())
         .max_depth(max_depth.into())
         .into_iter()
         .filter(|x| x.is_ok())
@@ -15,40 +17,16 @@ fn folders(path: &str, max_depth: u8) -> Result<Vec<DirEntry>, io::Error> {
         .collect::<Vec<DirEntry>>())
 }
 
-struct ParentDirectory {
-    path: String,
-    include_hidden: bool,
-    max_depth: u8,
-}
-
-pub fn get_files() -> Vec<String> {
-    let directory_list = vec![
-        ParentDirectory {
-            path: "/home/kcaverly/personal".to_string(),
-            include_hidden: false,
-            max_depth: 1,
-        },
-        ParentDirectory {
-            path: "/home/kcaverly/.dotfiles".to_string(),
-            include_hidden: true,
-            max_depth: 3,
-        },
-        ParentDirectory {
-            path: "/home/kcaverly/work".to_string(),
-            include_hidden: true,
-            max_depth: 2,
-        },
-    ];
-
+pub fn get_files(projects: &HashMap<String, Project>) -> Vec<String> {
     let mut file_list: Vec<String> = Vec::new();
 
-    for directory in directory_list.iter() {
-        let dir_files: Vec<String> = folders(&directory.path, directory.max_depth)
+    for (_key, value) in &*projects {
+        let dir_files: Vec<String> = folders(&value.directory, value.min_depth, value.max_depth)
             .unwrap()
             .iter()
             .map(|x| x.path().to_str().unwrap().to_string())
             .filter(|x| {
-                if directory.include_hidden {
+                if value.include_hidden {
                     true
                 } else {
                     !x.starts_with(".")
@@ -60,7 +38,7 @@ pub fn get_files() -> Vec<String> {
             .collect();
 
         for file in dir_files.iter() {
-            if file.to_string() != directory.path {
+            if file.to_string() != value.directory {
                 file_list.push(file.to_string());
             }
         }
@@ -69,11 +47,18 @@ pub fn get_files() -> Vec<String> {
     return file_list;
 }
 
+pub fn match_to_project<'a>(path: &'a str, projects: &'a HashMap<String, Project>) -> &'a Project {
+    for (_key, value) in projects {
+        if path.contains(&value.directory) {
+            return value;
+        }
+    }
+    panic!("No project found for directory")
+}
+
 pub fn search_options(search_options: Vec<String>) -> String {
     let search_string: String = search_options.join("\n");
-    let options = SkimOptionsBuilder::default()
-        .build()
-        .unwrap();
+    let options = SkimOptionsBuilder::default().build().unwrap();
 
     let item_reader = SkimItemReader::default();
     let items = item_reader.of_bufread(Cursor::new(search_string));

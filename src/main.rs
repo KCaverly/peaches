@@ -46,26 +46,34 @@ fn run_upgrade() {
     println!("{}", result);
 }
 
-fn run_projects() {
+fn run_projects(cfg: &config::Config) {
     // Get Files and Search
-    let files = projects::get_files();
+    let files = projects::get_files(&cfg.projects);
     let selected = projects::search_options(files);
     let name = selected.split("/").last().unwrap();
+    let selected_project = projects::match_to_project(&selected, &cfg.projects);
 
     // Launch Project
-    tmux::TMUX::create_window("kc", name);
-    tmux::TMUX::send_keys("kc", name, &format!("cd {selected} && clear"));
-    tmux::TMUX::attach_or_select_window("kc", name);
+    println!("{}", selected_project.session_name);
+    println!("{}", selected_project.directory);
+    tmux::TMUX::create_window(&selected_project.session_name, name);
+    tmux::TMUX::send_keys(
+        &selected_project.session_name,
+        name,
+        &format!("cd {selected} && clear"),
+    );
+    tmux::TMUX::attach_or_select_window(&selected_project.session_name, name);
 }
 
 fn main() {
-    config::load_config();
+    let cfg: config::Config = config::load_config();
+    println!("{:#?}", cfg);
 
     let value = Value::parse();
 
     match &value.commands {
         Commands::Projects {} => {
-            run_projects();
+            run_projects(&cfg);
         }
         Commands::Upgrade {} => {
             run_upgrade();
