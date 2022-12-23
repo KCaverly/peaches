@@ -21,6 +21,7 @@ pub struct Project {
 pub struct Dotfiles {
     pub repo: String,
     pub location: String,
+    pub command: String,
 }
 
 fn get_peaches_path() -> String {
@@ -38,7 +39,7 @@ pub fn generate_config() {
 [projects]
     [projects.default]
     session_name = "default"
-    directory = "~"
+    directory = "/"
     min_depth = 1
     max_depth = 1
     include_hidden = false
@@ -46,6 +47,7 @@ pub fn generate_config() {
 [dotfiles]
 repo = ""
 location = ""
+command = ""
 "#;
 
     let peaches_path = get_peaches_path();

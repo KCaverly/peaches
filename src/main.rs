@@ -75,7 +75,7 @@ fn run_projects(cfg: &config::Config) {
 }
 
 fn run_dotfiles(cfg: &config::Config) {
-    dotfiles::git_pull_dotfiles(&cfg.dotfiles.location);
+    dotfiles::git_pull_dotfiles(&cfg.dotfiles.location, &cfg.dotfiles.command);
 }
 
 fn main() {
