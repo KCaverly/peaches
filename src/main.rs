@@ -1,4 +1,5 @@
 mod config;
+mod dotfiles;
 mod projects;
 mod tmux;
 
@@ -21,6 +22,8 @@ enum Commands {
     Upgrade {},
     /// Initialize config file
     Config {},
+    /// Update Dotfiles
+    Dotfiles {},
 }
 
 fn run_config() {
@@ -71,6 +74,10 @@ fn run_projects(cfg: &config::Config) {
     tmux::TMUX::attach_or_select_window(&selected_project.session_name, name);
 }
 
+fn run_dotfiles(cfg: &config::Config) {
+    dotfiles::git_pull_dotfiles(&cfg.dotfiles.location);
+}
+
 fn main() {
     let value = Value::parse();
 
@@ -85,6 +92,11 @@ fn main() {
 
         Commands::Config {} => {
             run_config();
+        }
+
+        Commands::Dotfiles {} => {
+            let cfg: config::Config = config::load_config();
+            run_dotfiles(&cfg);
         }
     }
 }

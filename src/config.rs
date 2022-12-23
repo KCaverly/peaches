@@ -5,6 +5,7 @@ use toml;
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub projects: HashMap<String, Project>,
+    pub dotfiles: Dotfiles,
 }
 
 #[derive(Debug, Deserialize)]
@@ -14,6 +15,12 @@ pub struct Project {
     pub max_depth: u8,
     pub min_depth: u8,
     pub include_hidden: bool,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Dotfiles {
+    pub repo: String,
+    pub location: String,
 }
 
 fn get_peaches_path() -> String {
@@ -35,6 +42,10 @@ pub fn generate_config() {
     min_depth = 1
     max_depth = 1
     include_hidden = false
+
+[dotfiles]
+repo = ""
+location = ""
 "#;
 
     let peaches_path = get_peaches_path();
@@ -46,33 +57,6 @@ pub fn load_config() -> Config {
 
     let config_string: String = fs::read_to_string(peaches_path).ok().unwrap();
 
-    const TEXT: &str = r#"
-
-    [projects]
-        [projects.personal]
-        session_name = "kc"
-        directory = "/home/kcaverly/personal"
-        max_depth = 1
-        min_depth = 1
-        include_hidden = false
-
-        [projects.work]
-        session_name = "kc"
-        directory = "/home/kcaverly/work"
-        max_depth = 2
-        min_depth = 2
-        include_hidden = false
-
-        [projects.dotfiles]
-        session_name = "kc"
-        directory = "/home/kcaverly/.dotfiles"
-        max_depth = 3
-        min_depth = 3
-        include_hidden = false
-
-    "#;
-
     let config: Config = toml::from_str(&config_string).unwrap();
-    // println!("{:#?}", config);
     return config;
 }
