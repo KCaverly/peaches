@@ -1,4 +1,5 @@
 mod config;
+mod docker;
 mod dotfiles;
 mod projects;
 mod tmux;
@@ -24,6 +25,8 @@ enum Commands {
     Config {},
     /// Update Dotfiles
     Dotfiles {},
+    /// Launch Docker Container Finder
+    Docker {},
 }
 
 fn run_config() {
@@ -63,8 +66,6 @@ fn run_projects(cfg: &config::Config) {
     let selected_project = projects::match_to_project(&selected, &cfg.projects);
 
     // Launch Project
-    println!("{}", selected_project.session_name);
-    println!("{}", selected_project.directory);
     tmux::TMUX::create_window(&selected_project.session_name, name);
     tmux::TMUX::send_keys(
         &selected_project.session_name,
@@ -76,6 +77,10 @@ fn run_projects(cfg: &config::Config) {
 
 fn run_dotfiles(cfg: &config::Config) {
     dotfiles::git_pull_dotfiles(&cfg.dotfiles.location, &cfg.dotfiles.command);
+}
+
+fn run_docker() {
+    docker::get_container_names();
 }
 
 fn main() {
@@ -98,5 +103,7 @@ fn main() {
             let cfg: config::Config = config::load_config();
             run_dotfiles(&cfg);
         }
+
+        Commands::Docker {} => run_docker(),
     }
 }
