@@ -80,7 +80,20 @@ fn run_dotfiles(cfg: &config::Config) {
 }
 
 fn run_docker() {
-    docker::get_container_names();
+    let containers = docker::get_container_names();
+    let selected = projects::search_options(containers);
+    let name = &selected.replace("-", "_");
+
+    // Launch Project
+    // If window exists, presume it has already activated the docker continer
+    if tmux::TMUX::window_exists("docker", name) {
+        tmux::TMUX::attach_or_select_window("docker", name);
+    } else {
+        // Otherwise, create the window and enter a bash shell in the docker container
+        tmux::TMUX::create_window("docker", name);
+        tmux::TMUX::send_keys("docker", name, &format!("docker exec -ti {selected} bash"));
+        tmux::TMUX::attach_or_select_window("docker", name);
+    }
 }
 
 fn main() {
