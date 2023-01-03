@@ -3,6 +3,7 @@ mod docker;
 mod dotfiles;
 mod fuzzy_finder;
 mod projects;
+mod ssh;
 mod tmux;
 
 use clap::{Parser, Subcommand};
@@ -20,6 +21,8 @@ struct Value {
 enum Commands {
     /// Run projects fuzzy finder
     Projects {},
+    /// Run ssh server launcher
+    SSH {},
     /// Upgrade peaches to latest version available on github
     Upgrade {},
     /// Initialize config file
@@ -105,6 +108,12 @@ fn run_encrypt(raw_string: &str) {
     println!("Encrypted: {}", config::Config::encrypt(raw_string));
 }
 
+fn run_ssh(cfg: &config::Config) {
+    let server_list = ssh::get_servers(&cfg.ssh);
+    let selected = fuzzy_finder::search_options(server_list);
+    println!("Selected: {}", selected);
+}
+
 fn main() {
     let value = Value::parse();
 
@@ -113,6 +122,12 @@ fn main() {
             let cfg: config::Config = config::load_config();
             run_projects(&cfg);
         }
+
+        Commands::SSH {} => {
+            let cfg: config::Config = config::load_config();
+            run_ssh(&cfg);
+        }
+
         Commands::Upgrade {} => {
             run_upgrade();
         }

@@ -53,6 +53,7 @@ pub struct Dotfiles {
 #[derive(Debug, Deserialize)]
 pub struct SSH {
     pub host: String,
+    pub username: String,
     pub auth_method: String,
     pub password: String,
 }
