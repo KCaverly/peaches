@@ -1,6 +1,7 @@
 mod config;
 mod docker;
 mod dotfiles;
+mod fuzzy_finder;
 mod projects;
 mod tmux;
 
@@ -63,7 +64,7 @@ fn run_upgrade() {
 fn run_projects(cfg: &config::Config) {
     // Get Files and Search
     let files = projects::get_files(&cfg.projects);
-    let selected = projects::search_options(files);
+    let selected = fuzzy_finder::search_options(files);
     let name = selected.split("/").last().unwrap();
     let selected_project = projects::match_to_project(&selected, &cfg.projects);
 
@@ -83,7 +84,7 @@ fn run_dotfiles(cfg: &config::Config) {
 
 fn run_docker() {
     let containers = docker::get_container_names();
-    let selected = projects::search_options(containers);
+    let selected = fuzzy_finder::search_options(containers);
     let name = &selected.replace("-", "_");
 
     // Launch Project
