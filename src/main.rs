@@ -93,6 +93,7 @@ fn run_docker() {
         tmux::TMUX::create_window("docker", name);
         tmux::TMUX::send_keys("docker", name, &format!("docker exec -ti {selected} bash"));
         tmux::TMUX::attach_or_select_window("docker", name);
+        tmux::TMUX::split_active_window(true);
     }
 }
 

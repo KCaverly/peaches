@@ -59,15 +59,6 @@ impl TMUX {
         ]);
     }
 
-    pub fn create_session(session_name: &str) -> bool {
-        // Do not recreate the session if one exists
-        if Self::session_exists(session_name) {
-            return true;
-        }
-
-        return Self::run_tmux_command(vec!["new-session", "-d", "-s", session_name]);
-    }
-
     pub fn create_window(session_name: &str, window_name: &str) -> bool {
         // Do not recreate window if one exists
         if Self::window_exists(session_name, window_name) {
@@ -134,5 +125,14 @@ impl TMUX {
             keys,
             "C-m",
         ]);
+    }
+
+    pub fn split_active_window(horizontal: bool) -> bool {
+        if horizontal {
+            return Self::run_tmux_command(vec!["split-window", "-v", "-d"]);
+        } else {
+            return Self::run_tmux_command(vec!["split-window", "-h", "-d"]);
+        }
+        return false;
     }
 }
