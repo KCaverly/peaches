@@ -10,30 +10,7 @@ pub struct Config {
     pub ssh: HashMap<String, SSH>,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct Project {
-    pub session_name: String,
-    pub directory: String,
-    pub max_depth: u8,
-    pub min_depth: u8,
-    pub include_hidden: bool,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct Dotfiles {
-    pub repo: String,
-    pub location: String,
-    pub command: String,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct SSH {
-    pub host: String,
-    pub auth_method: String,
-    pub password: String,
-}
-
-impl SSH {
+impl Config {
     pub fn decrypt(encrypted: &str) -> String {
         if !encrypted.contains("crypt:") {
             return encrypted.to_string();
@@ -55,6 +32,29 @@ impl SSH {
             panic!("Please set encryption key as 'PEACHES_KEY' in environment variables.");
         }
     }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Project {
+    pub session_name: String,
+    pub directory: String,
+    pub max_depth: u8,
+    pub min_depth: u8,
+    pub include_hidden: bool,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Dotfiles {
+    pub repo: String,
+    pub location: String,
+    pub command: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SSH {
+    pub host: String,
+    pub auth_method: String,
+    pub password: String,
 }
 
 fn get_peaches_path() -> String {

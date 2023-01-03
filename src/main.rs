@@ -101,7 +101,7 @@ fn run_docker() {
 
 fn run_encrypt(raw_string: &str) {
     println!("Raw: {}", raw_string);
-    println!("Encrypted: {}", config::SSH::encrypt(raw_string));
+    println!("Encrypted: {}", config::Config::encrypt(raw_string));
 }
 
 fn main() {
