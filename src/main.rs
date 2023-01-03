@@ -27,6 +27,8 @@ enum Commands {
     Dotfiles {},
     /// Launch Docker Container Finder
     Docker {},
+    /// Helper Function to Encrypt With PEACHES_KEY
+    Encrypt {},
 }
 
 fn run_config() {
@@ -97,6 +99,11 @@ fn run_docker() {
     }
 }
 
+fn run_encrypt(raw_string: &str) {
+    println!("Raw: {}", raw_string);
+    println!("Encrypted: {}", config::SSH::encrypt(raw_string));
+}
+
 fn main() {
     let value = Value::parse();
 
@@ -119,5 +126,8 @@ fn main() {
         }
 
         Commands::Docker {} => run_docker(),
+
+        // TODO: Move this test_password to subcommand argument
+        Commands::Encrypt {} => run_encrypt("test_password"),
     }
 }
