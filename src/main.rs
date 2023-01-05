@@ -108,12 +108,6 @@ fn run_encrypt(raw_string: &str) {
     println!("Encrypted: {}", config::Config::encrypt(raw_string));
 }
 
-fn run_ssh(cfg: &config::Config) {
-    let server_list = ssh::get_servers(&cfg.ssh);
-    let selected = fuzzy_finder::search_options(server_list);
-    println!("Selected: {}", selected);
-}
-
 fn main() {
     let value = Value::parse();
 
@@ -125,7 +119,7 @@ fn main() {
 
         Commands::SSH {} => {
             let cfg: config::Config = config::load_config();
-            run_ssh(&cfg);
+            ssh::SSHCommand::run(&cfg);
         }
 
         Commands::Upgrade {} => {
