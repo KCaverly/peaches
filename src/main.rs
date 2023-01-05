@@ -1,14 +1,14 @@
 mod config;
+mod dirs;
 mod docker;
 mod dotfiles;
 mod fuzzy_finder;
-mod projects;
 mod ssh;
 mod tmux;
 
 use clap::{Parser, Subcommand};
 use docker::DockerCommand;
-use projects::ProjectsCommand;
+use dirs::DirsCommand;
 use ssh::SSHCommand;
 use std::process::{Command, Stdio};
 use std::str;
@@ -23,7 +23,7 @@ struct Value {
 #[derive(Subcommand)]
 enum Commands {
     /// Run projects fuzzy finder
-    Projects {},
+    Dirs {},
     /// Run ssh server launcher
     SSH {},
     /// Upgrade peaches to latest version available on github
@@ -80,10 +80,9 @@ fn main() {
     let value = Value::parse();
 
     match &value.commands {
-        Commands::Projects {} => {
+        Commands::Dirs {} => {
             let cfg: config::Config = config::load_config();
-            ProjectsCommand::run(&cfg);
-            // run_projects(&cfg);
+            DirsCommand::run(&cfg);
         }
 
         Commands::SSH {} => {

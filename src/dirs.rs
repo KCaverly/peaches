@@ -2,14 +2,14 @@ use std::{collections::HashMap, io};
 use walkdir::{DirEntry, WalkDir};
 
 use crate::{
-    config::{Config, Project},
+    config::{Config, ProjectDirectory},
     fuzzy_finder,
     tmux::TMUX,
 };
 
-pub struct ProjectsCommand {}
+pub struct DirsCommand {}
 
-impl ProjectsCommand {
+impl DirsCommand {
     fn get_folders(path: &str, min_depth: u8, max_depth: u8) -> Result<Vec<DirEntry>, io::Error> {
         Ok(WalkDir::new(path)
             .min_depth(min_depth.into())
@@ -21,10 +21,10 @@ impl ProjectsCommand {
             .collect::<Vec<DirEntry>>())
     }
 
-    fn get_options(projects: &HashMap<String, Project>) -> Vec<String> {
+    fn get_options(directories: &HashMap<String, ProjectDirectory>) -> Vec<String> {
         let mut file_list: Vec<String> = Vec::new();
 
-        for (_key, value) in &*projects {
+        for (_key, value) in &*directories {
             let dir_files: Vec<String> =
                 Self::get_folders(&value.directory, value.min_depth, value.max_depth)
                     .unwrap()
@@ -51,8 +51,8 @@ impl ProjectsCommand {
         return file_list;
     }
 
-    fn get_project_details<'a>(cfg: &'a Config, selected: &'a str) -> &'a Project {
-        for (_key, value) in &cfg.projects {
+    fn get_directory_details<'a>(cfg: &'a Config, selected: &'a str) -> &'a ProjectDirectory {
+        for (_key, value) in &cfg.directories {
             if selected.contains(&value.directory) {
                 return value;
             }
@@ -61,7 +61,7 @@ impl ProjectsCommand {
     }
 
     fn post_search_command(cfg: &Config, selected: &str) {
-        let details = Self::get_project_details(cfg, selected);
+        let details = Self::get_directory_details(cfg, selected);
         let name = selected.split("/").last().unwrap();
 
         TMUX::create_window(&details.session_name, name);
@@ -74,7 +74,7 @@ impl ProjectsCommand {
     }
 
     pub fn run(cfg: &Config) {
-        let options = Self::get_options(&cfg.projects);
+        let options = Self::get_options(&cfg.directories);
         let selected = fuzzy_finder::search_options(options);
         Self::post_search_command(&cfg, &selected);
     }

@@ -5,7 +5,7 @@ use toml;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
-    pub projects: HashMap<String, Project>,
+    pub directories: HashMap<String, ProjectDirectory>,
     pub dotfiles: Dotfiles,
     pub ssh: HashMap<String, SSH>,
 }
@@ -35,7 +35,7 @@ impl Config {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Project {
+pub struct ProjectDirectory {
     pub session_name: String,
     pub directory: String,
     pub max_depth: u8,
@@ -70,8 +70,8 @@ fn get_peaches_path() -> String {
 
 pub fn generate_config() {
     const DEFAULT_CONFIG: &str = r#"
-[projects]
-    [projects.default]
+[directories]
+    [directories.default]
     session_name = "default"
     directory = "/"
     min_depth = 1
