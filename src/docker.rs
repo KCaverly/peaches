@@ -1,19 +1,45 @@
 use std::process;
 
-pub fn get_container_names() -> Vec<String> {
-    let ls = process::Command::new("docker")
-        .args(vec!["ps"])
-        .output()
-        .unwrap();
+use crate::{config::Config, fuzzy_finder, tmux::TMUX};
 
-    let output = String::from_utf8(ls.stdout);
-    let mut container_names: Vec<String> = Vec::new();
-    for line in output.expect("IS DOCKER INSTALLED?").split("\n") {
-        let name = line.split("   ").last().unwrap().trim();
-        if (name.len() > 0) & (name != "NAMES") {
-            container_names.push(name.to_string());
+pub struct DockerCommand {}
+
+impl DockerCommand {
+    fn get_options() -> Vec<String> {
+        let ls = process::Command::new("docker")
+            .args(vec!["ps"])
+            .output()
+            .unwrap();
+        let output = String::from_utf8(ls.stdout);
+        let mut container_names: Vec<String> = Vec::new();
+        for line in output.expect("IS DOCKER INSTALLED?").split("\n") {
+            let name = line.split("   ").last().unwrap().trim();
+            if (name.len() > 0) & (name != "NAMES") {
+                container_names.push(name.to_string());
+            }
+        }
+
+        return container_names;
+    }
+
+    fn post_search_command(selected: &str) {
+        let name = &selected.replace("-", "_");
+
+        // Launch Project
+        // If window exists, presume it has already activated the docker container
+        if TMUX::window_exists("docker", name) {
+            TMUX::attach_or_select_window("docker", name);
+        } else {
+            // Otherwise, create the window and enter a bash shell in the docker container.
+            TMUX::create_window("docker", name);
+            TMUX::send_keys("docker", name, &format!("docker exec -ti {selected}"));
+            TMUX::attach_or_select_window("docker", name);
         }
     }
 
-    return container_names;
+    pub fn run() {
+        let options = Self::get_options();
+        let selected = fuzzy_finder::search_options(options);
+        Self::post_search_command(&selected);
+    }
 }

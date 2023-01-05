@@ -126,13 +126,4 @@ impl TMUX {
             "C-m",
         ]);
     }
-
-    pub fn split_active_window(horizontal: bool) -> bool {
-        if horizontal {
-            return Self::run_tmux_command(vec!["split-window", "-v", "-d"]);
-        } else {
-            return Self::run_tmux_command(vec!["split-window", "-h", "-d"]);
-        }
-        return false;
-    }
 }

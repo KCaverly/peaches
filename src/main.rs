@@ -7,6 +7,9 @@ mod ssh;
 mod tmux;
 
 use clap::{Parser, Subcommand};
+use docker::DockerCommand;
+use projects::ProjectsCommand;
+use ssh::SSHCommand;
 use std::process::{Command, Stdio};
 use std::str;
 
@@ -64,27 +67,8 @@ fn run_upgrade() {
     println!("{}", result);
 }
 
-
 fn run_dotfiles(cfg: &config::Config) {
     dotfiles::git_pull_dotfiles(&cfg.dotfiles.location, &cfg.dotfiles.command);
-}
-
-fn run_docker() {
-    let containers = docker::get_container_names();
-    let selected = fuzzy_finder::search_options(containers);
-    let name = &selected.replace("-", "_");
-
-    // Launch Project
-    // If window exists, presume it has already activated the docker continer
-    if tmux::TMUX::window_exists("docker", name) {
-        tmux::TMUX::attach_or_select_window("docker", name);
-    } else {
-        // Otherwise, create the window and enter a bash shell in the docker container
-        tmux::TMUX::create_window("docker", name);
-        tmux::TMUX::send_keys("docker", name, &format!("docker exec -ti {selected} bash"));
-        tmux::TMUX::attach_or_select_window("docker", name);
-        tmux::TMUX::split_active_window(true);
-    }
 }
 
 fn run_encrypt(raw_string: &str) {
@@ -98,13 +82,13 @@ fn main() {
     match &value.commands {
         Commands::Projects {} => {
             let cfg: config::Config = config::load_config();
-            projects::ProjectsCommand::run(&cfg);
+            ProjectsCommand::run(&cfg);
             // run_projects(&cfg);
         }
 
         Commands::SSH {} => {
             let cfg: config::Config = config::load_config();
-            ssh::SSHCommand::run(&cfg);
+            SSHCommand::run(&cfg);
         }
 
         Commands::Upgrade {} => {
@@ -120,7 +104,7 @@ fn main() {
             run_dotfiles(&cfg);
         }
 
-        Commands::Docker {} => run_docker(),
+        Commands::Docker {} => DockerCommand::run(),
 
         // TODO: Move this test_password to subcommand argument
         Commands::Encrypt {} => run_encrypt("test_password"),
