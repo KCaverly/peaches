@@ -1,6 +1,6 @@
 use std::process;
 
-use crate::{config::Config, fuzzy_finder, tmux::TMUX};
+use crate::{fuzzy_finder, tmux::TMUX};
 
 pub struct DockerCommand {}
 
