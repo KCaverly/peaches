@@ -1,6 +1,7 @@
 use crate::{
     config::{Config, SSH},
-    fuzzy_finder, tmux,
+    fuzzy_finder,
+    tmux::TMUX,
 };
 
 pub struct SSHCommand {}
@@ -30,8 +31,8 @@ impl SSHCommand {
 
         // Launch TMUX window for SSH Server
         let alias = Self::get_server_alias(selected);
-        tmux::TMUX::create_window("ssh", alias);
-        tmux::TMUX::send_keys(
+        TMUX::create_window("ssh", alias);
+        TMUX::send_keys(
             "ssh",
             alias,
             &format!(
@@ -41,7 +42,7 @@ impl SSHCommand {
                 &details.host
             ),
         );
-        tmux::TMUX::attach_or_select_window("ssh", alias);
+        TMUX::attach_or_select_window("ssh", alias);
     }
 
     pub fn run(cfg: &Config) {
