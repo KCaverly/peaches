@@ -7,8 +7,8 @@ mod ssh;
 mod tmux;
 
 use clap::{Parser, Subcommand};
-use docker::DockerCommand;
 use dirs::DirsCommand;
+use docker::DockerCommand;
 use ssh::SSHCommand;
 use std::process::{Command, Stdio};
 use std::str;
