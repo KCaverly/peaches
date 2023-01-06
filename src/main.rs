@@ -4,6 +4,7 @@ mod docker;
 mod dotfiles;
 mod fuzzy_finder;
 mod ssh;
+mod tasks;
 mod tmux;
 
 use clap::{Parser, Subcommand};
@@ -12,6 +13,7 @@ use docker::DockerCommand;
 use ssh::SSHCommand;
 use std::process::{Command, Stdio};
 use std::str;
+use tasks::TasksCommand;
 
 #[derive(Parser)]
 #[clap(about, version, author)]
@@ -26,6 +28,8 @@ enum Commands {
     Dirs {},
     /// Run ssh server launcher
     SSH {},
+    /// Run tasks launcher
+    Tasks {},
     /// Upgrade peaches to latest version available on github
     Upgrade {},
     /// Initialize config file
@@ -89,6 +93,11 @@ fn main() {
             let cfg: config::Config = config::load_config();
             SSHCommand::run(&cfg);
         }
+
+        Commands::Tasks {} => {
+            let cfg: config::Config = config::load_config();
+            TasksCommand::run(&cfg)
+        },
 
         Commands::Upgrade {} => {
             run_upgrade();
