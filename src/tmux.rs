@@ -102,6 +102,12 @@ impl TMUX {
                 .spawn()
                 .expect("FAILED TO ATTACH")
                 .wait();
+
+            let _i = process::Command::new("tmux").args(vec!["select-pane", "-t", "0"])
+                .spawn()
+                .expect("FAILED TO SELECT 0 PANE")
+                .wait();
+
             return true;
         } else {
             let _o = process::Command::new("tmux")
@@ -113,6 +119,12 @@ impl TMUX {
                 .spawn()
                 .expect("FAILED TO ATTACH")
                 .wait();
+
+            let _i = process::Command::new("tmux").args(vec!["select-pane", "-t", "0"])
+                .spawn()
+                .expect("FAILED TO SELECT 0 PANE")
+                .wait();
+
             return true;
         }
     }

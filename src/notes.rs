@@ -5,19 +5,23 @@ pub struct NotesCommand {}
 impl NotesCommand {
     pub fn run(cfg: &Config) {
         let dir = &cfg.notes.directory;
-        if TMUX::window_exists("org", "notes") {
-            TMUX::attach_or_select_window("org", "notes");
+        if TMUX::window_exists(&cfg.notes.session_name, "notes") {
+            TMUX::attach_or_select_window(&cfg.notes.session_name, "notes");
         } else {
-            TMUX::create_window("org", "notes");
-            TMUX::send_keys("org", "notes", &format!("cd {dir} && clear"));
+            TMUX::create_window(&cfg.notes.session_name, "notes");
+            TMUX::send_keys(
+                &cfg.notes.session_name,
+                "notes",
+                &format!("cd {dir} && clear"),
+            );
             TMUX::watch_command(
-                "org",
+                &cfg.notes.session_name,
                 "notes",
                 cfg.notes.run_hidden,
                 true,
                 &cfg.notes.command,
             );
-            TMUX::attach_or_select_window("org", "notes");
+            TMUX::attach_or_select_window(&cfg.notes.session_name, "notes");
         }
     }
 }

@@ -7,7 +7,8 @@ use toml;
 pub struct Config {
     pub directories: HashMap<String, ProjectDirectory>,
     pub ssh: HashMap<String, SSH>,
-    pub notes: Notes
+    pub notes: Notes,
+    pub tasks: Tasks,
 }
 
 impl Config {
@@ -52,7 +53,13 @@ pub struct SSH {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct Tasks {
+    pub session_name: String,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct Notes {
+    pub session_name: String,
     pub directory: String,
     pub command: String,
     pub run_hidden: bool,
@@ -86,6 +93,7 @@ pub fn generate_config() {
     encrypted = "crypt:"
 
 [notes]
+session_name = "org"
 directory = "~/notes"
 command = "emanote"
 run_hidden = true
