@@ -1,6 +1,10 @@
 
-![logo](logo.png)
-
+<p align="center">
+<img src="logo.png"
+     alt="Logo"
+     style="width: 60%;"/>
+</p>
+     
 ## Why?
 
 I spend a disproportionate amount of time in the terminal on navigation. This is often low value add, repetitive work, annoying to manage manually and easily automated. `peaches` solves for this, by offering an extendable smart switcher for the terminal. Leveraging commonly loved linux tools such as `tmux`, `peaches` offers a fuzzy find experience for navigating between projects, connecting to ssh servers, connecting to docker containers, and launching common terminal applications. 
