@@ -1,6 +1,5 @@
-# peaches
 
-A smart switcher for the terminal.
+![logo](logo.png)
 
 ## Why?
 
