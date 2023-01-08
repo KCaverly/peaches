@@ -50,6 +50,13 @@ pub struct SSH {
     pub password: String,
 }
 
+#[derive(Debug, Deserialize)]
+pub struct Notes {
+    pub directory: String,
+    pub command: String,
+    pub run_hidden: bool,
+}
+
 fn get_peaches_path() -> String {
     let mut peaches_path: String = env::var("HOME").ok().unwrap();
     peaches_path.push_str("/.peaches");
@@ -76,6 +83,12 @@ pub fn generate_config() {
     host = "127.0.0.1"
     auth_method = "password"
     encrypted = "crypt:"
+
+[notes]
+directory = "~/notes"
+command = "emanote"
+run_hidden = true
+
 "#;
 
     let peaches_path = get_peaches_path();
