@@ -1,7 +1,6 @@
 mod config;
 mod dirs;
 mod docker;
-mod dotfiles;
 mod fuzzy_finder;
 mod ssh;
 mod tasks;
@@ -34,8 +33,6 @@ enum Commands {
     Upgrade {},
     /// Initialize config file
     Config {},
-    /// Update Dotfiles
-    Dotfiles {},
     /// Launch Docker Container Finder
     Docker {},
     /// Helper Function to Encrypt With PEACHES_KEY
@@ -71,10 +68,6 @@ fn run_upgrade() {
     println!("{}", result);
 }
 
-fn run_dotfiles(cfg: &config::Config) {
-    dotfiles::git_pull_dotfiles(&cfg.dotfiles.location, &cfg.dotfiles.command);
-}
-
 fn run_encrypt(raw_string: &str) {
     println!("Raw: {}", raw_string);
     println!("Encrypted: {}", config::Config::encrypt(raw_string));
@@ -97,7 +90,7 @@ fn main() {
         Commands::Tasks {} => {
             let cfg: config::Config = config::load_config();
             TasksCommand::run(&cfg)
-        },
+        }
 
         Commands::Upgrade {} => {
             run_upgrade();
@@ -105,11 +98,6 @@ fn main() {
 
         Commands::Config {} => {
             run_config();
-        }
-
-        Commands::Dotfiles {} => {
-            let cfg: config::Config = config::load_config();
-            run_dotfiles(&cfg);
         }
 
         Commands::Docker {} => DockerCommand::run(),

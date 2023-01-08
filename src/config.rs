@@ -6,7 +6,6 @@ use toml;
 #[derive(Debug, Deserialize)]
 pub struct Config {
     pub directories: HashMap<String, ProjectDirectory>,
-    pub dotfiles: Dotfiles,
     pub ssh: HashMap<String, SSH>,
 }
 
@@ -44,13 +43,6 @@ pub struct ProjectDirectory {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Dotfiles {
-    pub repo: String,
-    pub location: String,
-    pub command: String,
-}
-
-#[derive(Debug, Deserialize)]
 pub struct SSH {
     pub host: String,
     pub username: String,
@@ -77,11 +69,6 @@ pub fn generate_config() {
     min_depth = 1
     max_depth = 1
     include_hidden = false
-
-[dotfiles]
-repo = ""
-location = ""
-command = ""
 
 [ssh]
 
