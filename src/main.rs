@@ -2,6 +2,7 @@ mod config;
 mod dirs;
 mod docker;
 mod fuzzy_finder;
+mod notes;
 mod ssh;
 mod tasks;
 mod tmux;
@@ -10,6 +11,7 @@ use clap::{Parser, Subcommand};
 use dirs::DirsCommand;
 use docker::DockerCommand;
 use ssh::SSHCommand;
+use notes::NotesCommand;
 use std::process::{Command, Stdio};
 use std::str;
 use tasks::TasksCommand;
@@ -29,6 +31,8 @@ enum Commands {
     SSH {},
     /// Run tasks launcher
     Tasks {},
+    /// Run notes launcher
+    Notes {},
     /// Upgrade peaches to latest version available on github
     Upgrade {},
     /// Initialize config file
@@ -90,6 +94,11 @@ fn main() {
         Commands::Tasks {} => {
             let cfg: config::Config = config::load_config();
             TasksCommand::run(&cfg)
+        }
+
+        Commands::Notes {} => {
+            let cfg: config::Config = config::load_config();
+            NotesCommand::run(&cfg)
         }
 
         Commands::Upgrade {} => {

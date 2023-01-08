@@ -7,6 +7,7 @@ use toml;
 pub struct Config {
     pub directories: HashMap<String, ProjectDirectory>,
     pub ssh: HashMap<String, SSH>,
+    pub notes: Notes
 }
 
 impl Config {

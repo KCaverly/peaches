@@ -126,4 +126,44 @@ impl TMUX {
             "C-m",
         ]);
     }
+
+    pub fn watch_command(
+        session_name: &str,
+        window_name: &str,
+        hidden: bool,
+        horizontal: bool,
+        command: &str,
+    ) -> bool {
+        let dir_arg: &str;
+        if horizontal {
+            dir_arg = "-h";
+        } else {
+            dir_arg = "-v";
+        }
+
+        if hidden {
+            return Self::run_tmux_command(vec![
+                "split-window",
+                "-d",
+                &dir_arg,
+                "-t",
+                &format!("{session_name}:{window_name}"),
+                "-Z",
+                "watch",
+                &command,
+            ]);
+        } else {
+            return Self::run_tmux_command(vec![
+                "split-window",
+                "-d",
+                &dir_arg,
+                "-t",
+                &format!("{session_name}:{window_name}"),
+                "watch",
+                &command,
+            ]);
+        }
+
+        return false;
+    }
 }
