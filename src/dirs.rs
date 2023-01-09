@@ -1,4 +1,4 @@
-use std::{collections::HashMap, io};
+use std::{collections::HashMap, io, process};
 use walkdir::{DirEntry, WalkDir};
 
 use crate::{
@@ -77,5 +77,30 @@ impl DirsCommand {
         let options = Self::get_options(&cfg.directories);
         let selected = fuzzy_finder::search_options(options);
         Self::post_search_command(&cfg, &selected);
+    }
+
+    pub fn healthcheck(verbose: bool) -> bool {
+        if verbose {
+            println!("\nRequirements for 'dirs':");
+        }
+
+        let requirements: Vec<String> = vec!["tmux".to_string()];
+        for req in requirements.iter() {
+            let c = process::Command::new("which")
+                .arg(req)
+                .stdout(process::Stdio::null())
+                .status()
+                .unwrap();
+
+            if !c.success() {
+                println!("{}      Missing...", req);
+                return false;
+            } else {
+                if verbose {
+                    println!("{}      Found...", req);
+                }
+            }
+        }
+        return true;
     }
 }

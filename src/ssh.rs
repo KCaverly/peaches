@@ -3,6 +3,7 @@ use crate::{
     fuzzy_finder,
     tmux::TMUX,
 };
+use std::process;
 
 pub struct SSHCommand {}
 
@@ -49,5 +50,30 @@ impl SSHCommand {
         let options = Self::get_options(cfg);
         let selected = fuzzy_finder::search_options(options);
         Self::post_search_command(&cfg, &selected);
+    }
+
+    pub fn healthcheck(verbose: bool) -> bool {
+        if verbose {
+            println!("\nRequirements for 'ssh':");
+        }
+
+        let requirements: Vec<String> = vec!["ssh".to_string(), "sshpass".to_string()];
+        for req in requirements.iter() {
+            let c = process::Command::new("which")
+                .arg(req)
+                .stdout(process::Stdio::null())
+                .status()
+                .unwrap();
+
+            if !c.success() {
+                println!("{}     Missing...", req);
+                return false;
+            } else {
+                if verbose {
+                    println!("{}     Found...", req);
+                }
+            }
+        }
+        return true;
     }
 }

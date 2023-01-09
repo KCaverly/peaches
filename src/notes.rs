@@ -24,4 +24,5 @@ impl NotesCommand {
             TMUX::attach_or_select_window(&cfg.notes.session_name, "notes");
         }
     }
+
 }

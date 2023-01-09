@@ -1,17 +1,18 @@
 mod config;
 mod dirs;
-mod tmux;
 mod fuzzy_finder;
 mod notes;
-mod tasks;
 mod ssh;
+mod tasks;
+mod tmux;
 
 use clap::{Args, Parser, Subcommand};
 
 use dirs::DirsCommand;
-use ssh::SSHCommand;
-use tasks::TasksCommand;
 use notes::NotesCommand;
+use ssh::SSHCommand;
+use std::process::exit;
+use tasks::TasksCommand;
 
 #[derive(Debug, Parser)] // requires `derive` feature
 #[command(name = "peaches")]
@@ -23,7 +24,7 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Commands {
-    /// Launch fuzzy finder for project directories 
+    /// Launch fuzzy finder for project directories
     #[command(arg_required_else_help = false)]
     Dirs {},
 
@@ -39,10 +40,13 @@ enum Commands {
 
     /// Manage configuration
     Config(Config),
+
+    /// Healthcheck
+    Healthcheck {},
 }
 
 #[derive(Debug, Args)]
-#[command(arg_required_else_help=true)]
+#[command(arg_required_else_help = true)]
 struct Config {
     #[command(subcommand)]
     command: Option<ConfigCommands>,
@@ -50,7 +54,6 @@ struct Config {
 
 #[derive(Debug, Subcommand)]
 enum ConfigCommands {
-
     /// Initialize Generic Config
     Init {},
 
@@ -62,18 +65,29 @@ fn main() {
     let args = Cli::parse();
 
     match args.command {
+        Commands::Dirs {} => {
+            if !DirsCommand::healthcheck(false) {
+                exit(0);
+            }
 
-        Commands::Dirs { } => {
             let cfg = config::load_config();
             DirsCommand::run(&cfg);
         }
 
-        Commands::SSH { } => {
+        Commands::SSH {} => {
+            if !SSHCommand::healthcheck(false) {
+                exit(0);
+            }
+
             let cfg = config::load_config();
             SSHCommand::run(&cfg);
         }
 
         Commands::Tasks {} => {
+            if !TasksCommand::healthcheck(false) {
+                exit(0);
+            }
+
             let cfg = config::load_config();
             TasksCommand::run(&cfg);
         }
@@ -83,17 +97,20 @@ fn main() {
             NotesCommand::run(&cfg);
         }
 
-        Commands::Config(config) => {
-            match config.command.unwrap() {
+        Commands::Config(config) => match config.command.unwrap() {
+            ConfigCommands::Init {} => {}
 
-                ConfigCommands::Init {} => {}
-
-                ConfigCommands::Encrypt { password } => {
-                    println!("Password {:?}", password);
-                }
+            ConfigCommands::Encrypt { password } => {
+                println!("Password {:?}", password);
             }
+        },
+
+        Commands::Healthcheck {} => {
+            println!("Running Healthcheck for peaches");
+            DirsCommand::healthcheck(true);
+            SSHCommand::healthcheck(true);
+            TasksCommand::healthcheck(true);
+            println!("\nPlease install all missing requirements from the above.");
         }
     }
-
-    // Continued program logic goes here...
 }
