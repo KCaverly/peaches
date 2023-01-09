@@ -1,117 +1,99 @@
 mod config;
 mod dirs;
-mod docker;
+mod tmux;
 mod fuzzy_finder;
 mod notes;
-mod ssh;
 mod tasks;
-mod tmux;
+mod ssh;
 
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
+
 use dirs::DirsCommand;
-use docker::DockerCommand;
 use ssh::SSHCommand;
-use notes::NotesCommand;
-use std::process::{Command, Stdio};
-use std::str;
 use tasks::TasksCommand;
+use notes::NotesCommand;
 
-#[derive(Parser)]
-#[clap(about, version, author)]
-struct Value {
-    #[clap(subcommand)]
-    commands: Commands,
+#[derive(Debug, Parser)] // requires `derive` feature
+#[command(name = "peaches")]
+#[command(about = "A Smart Switcher for the Terminal", long_about = None)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
 }
 
-#[derive(Subcommand)]
+#[derive(Debug, Subcommand)]
 enum Commands {
-    /// Run projects fuzzy finder
+    /// Launch fuzzy finder for project directories 
+    #[command(arg_required_else_help = false)]
     Dirs {},
-    /// Run ssh server launcher
+
+    /// Launch fuzzy finder for ssh servers
+    #[command(arg_required_else_help = false)]
     SSH {},
-    /// Run tasks launcher
+
+    /// Launch Task Manager
     Tasks {},
-    /// Run notes launcher
+
+    /// Launch Notes
     Notes {},
-    /// Upgrade peaches to latest version available on github
-    Upgrade {},
-    /// Initialize config file
-    Config {},
-    /// Launch Docker Container Finder
-    Docker {},
-    /// Helper Function to Encrypt With PEACHES_KEY
-    Encrypt {},
+
+    /// Manage configuration
+    Config(Config),
 }
 
-fn run_config() {
-    config::generate_config();
+#[derive(Debug, Args)]
+#[command(arg_required_else_help=true)]
+struct Config {
+    #[command(subcommand)]
+    command: Option<ConfigCommands>,
 }
 
-fn run_upgrade() {
-    println!("Getting new install script from peaches repository.\n");
+#[derive(Debug, Subcommand)]
+enum ConfigCommands {
 
-    let get_script = Command::new("wget")
-        .args(vec![
-            "https://raw.githubusercontent.com/KCaverly/peaches/main/install.sh",
-            "-O",
-            "-",
-        ])
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap();
+    /// Initialize Generic Config
+    Init {},
 
-    println!("Installing new version of peaches\n");
-
-    let install_script = Command::new("sh")
-        .stdin(Stdio::from(get_script.stdout.unwrap()))
-        .spawn()
-        .unwrap();
-
-    let output = install_script.wait_with_output().unwrap();
-    let result = str::from_utf8(&output.stdout).unwrap();
-    println!("{}", result);
-}
-
-fn run_encrypt(raw_string: &str) {
-    println!("Raw: {}", raw_string);
-    println!("Encrypted: {}", config::Config::encrypt(raw_string));
+    /// Encrypt password
+    Encrypt { password: Option<String> },
 }
 
 fn main() {
-    let value = Value::parse();
+    let args = Cli::parse();
 
-    match &value.commands {
-        Commands::Dirs {} => {
-            let cfg: config::Config = config::load_config();
+    match args.command {
+
+        Commands::Dirs { } => {
+            let cfg = config::load_config();
             DirsCommand::run(&cfg);
         }
 
-        Commands::SSH {} => {
-            let cfg: config::Config = config::load_config();
+        Commands::SSH { } => {
+            let cfg = config::load_config();
             SSHCommand::run(&cfg);
         }
 
         Commands::Tasks {} => {
-            let cfg: config::Config = config::load_config();
-            TasksCommand::run(&cfg)
+            let cfg = config::load_config();
+            TasksCommand::run(&cfg);
         }
 
         Commands::Notes {} => {
-            let cfg: config::Config = config::load_config();
-            NotesCommand::run(&cfg)
+            let cfg = config::load_config();
+            NotesCommand::run(&cfg);
         }
 
-        Commands::Upgrade {} => {
-            run_upgrade();
+        Commands::Config(config) => {
+            match config.command.unwrap() {
+
+                ConfigCommands::Init {} => {}
+
+                ConfigCommands::Encrypt { password } => {
+                    println!("Password {:?}", password);
+                }
+            }
         }
-
-        Commands::Config {} => {
-            run_config();
-        }
-
-        Commands::Docker {} => DockerCommand::run(),
-
-        // TODO: Move this test_password to subcommand argument
-        Commands::Encrypt {} => run_encrypt("test_password"),
     }
+
+    // Continued program logic goes here...
 }
