@@ -12,6 +12,17 @@ pub struct Config {
 }
 
 impl Config {
+    pub fn get_path() -> String {
+        let mut peaches_path: String;
+        if env::var("PEACHES_PATH").is_ok() {
+            peaches_path = env::var("PEACHES_PATH").ok().unwrap();
+        } else {
+            peaches_path = env::var("HOME").ok().unwrap();
+            peaches_path.push_str("/.peaches");
+        }
+        return peaches_path;
+    }
+
     pub fn decrypt(encrypted: &str) -> String {
         if !encrypted.contains("crypt:") {
             return encrypted.to_string();
@@ -65,16 +76,6 @@ pub struct Notes {
     pub run_hidden: bool,
 }
 
-fn get_peaches_path() -> String {
-    let mut peaches_path: String = env::var("HOME").ok().unwrap();
-    peaches_path.push_str("/.peaches");
-    if env::var("PEACHES_PATH").is_ok() {
-        peaches_path = env::var("PEACHES_PATH").ok().unwrap();
-    }
-
-    return peaches_path;
-}
-
 pub fn generate_config() {
     const DEFAULT_CONFIG: &str = r#"
 [directories]
@@ -100,12 +101,12 @@ run_hidden = true
 
 "#;
 
-    let peaches_path = get_peaches_path();
+    let peaches_path = Config::get_path();
     fs::write(peaches_path, DEFAULT_CONFIG).expect("Unable to write file");
 }
 
 pub fn load_config() -> Config {
-    let peaches_path = get_peaches_path();
+    let peaches_path = Config::get_path();
 
     let config_string: String = fs::read_to_string(peaches_path).ok().unwrap();
 
