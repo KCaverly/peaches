@@ -12,7 +12,7 @@ impl TasksCommand {
             TMUX::send_keys(
                 &cfg.tasks.session_name,
                 "tasks",
-                "task sync -y && taskwarrior-tui",
+                "task sync -y && taskwarrior-tui && task sync -y",
             );
             TMUX::attach_or_select_window(&cfg.tasks.session_name, "tasks");
         }
