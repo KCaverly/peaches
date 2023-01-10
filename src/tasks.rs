@@ -9,7 +9,11 @@ impl TasksCommand {
             TMUX::attach_or_select_window(&cfg.tasks.session_name, "tasks");
         } else {
             TMUX::create_window(&cfg.tasks.session_name, "tasks");
-            TMUX::send_keys(&cfg.tasks.session_name, "tasks", "taskwarrior-tui");
+            TMUX::send_keys(
+                &cfg.tasks.session_name,
+                "tasks",
+                "task sync -y && taskwarrior-tui",
+            );
             TMUX::attach_or_select_window(&cfg.tasks.session_name, "tasks");
         }
     }

@@ -1,5 +1,6 @@
 mod config;
 mod dirs;
+mod docker;
 mod fuzzy_finder;
 mod notes;
 mod ssh;
@@ -9,6 +10,7 @@ mod tmux;
 use clap::{Args, Parser, Subcommand};
 
 use dirs::DirsCommand;
+use docker::DockerCommand;
 use notes::NotesCommand;
 use ssh::SSHCommand;
 use std::process::exit;
@@ -31,6 +33,9 @@ enum Commands {
     /// Launch fuzzy finder for ssh servers
     #[command(arg_required_else_help = false)]
     SSH {},
+
+    /// Launch Docker Container fuzzy finder
+    Docker {},
 
     /// Launch Task Manager
     Tasks {},
@@ -83,6 +88,14 @@ fn main() {
             SSHCommand::run(&cfg);
         }
 
+        Commands::Docker {} => {
+            if !DockerCommand::healthcheck(false) {
+                exit(0);
+            }
+
+            DockerCommand::run();
+        }
+
         Commands::Tasks {} => {
             if !TasksCommand::healthcheck(false) {
                 exit(0);
@@ -109,6 +122,7 @@ fn main() {
             println!("Running Healthcheck for peaches");
             DirsCommand::healthcheck(true);
             SSHCommand::healthcheck(true);
+            DockerCommand::healthcheck(true);
             TasksCommand::healthcheck(true);
             println!("\nPlease install all missing requirements from the above.");
         }

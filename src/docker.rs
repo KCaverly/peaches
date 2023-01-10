@@ -42,4 +42,29 @@ impl DockerCommand {
         let selected = fuzzy_finder::search_options(options);
         Self::post_search_command(&selected);
     }
+
+    pub fn healthcheck(verbose: bool) -> bool {
+        if verbose {
+            println!("\nRequirements for 'docker':");
+        }
+
+        let requirements: Vec<String> = vec!["docker".to_string()];
+        for req in requirements.iter() {
+            let c = process::Command::new("which")
+                .arg(req)
+                .stdout(process::Stdio::null())
+                .status()
+                .unwrap();
+
+            if !c.success() {
+                println!("{}     Missing...", req);
+                return false;
+            } else {
+                if verbose {
+                    println!("{}     Found...", req);
+                }
+            }
+        }
+        return true;
+    }
 }
