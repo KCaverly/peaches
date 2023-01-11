@@ -14,7 +14,7 @@ impl NotesCommand {
                 "notes",
                 &format!("cd {dir} && clear"),
             );
-            TMUX::watch_command(
+            TMUX::run_hidden_command(
                 &cfg.notes.session_name,
                 "notes",
                 cfg.notes.run_hidden,

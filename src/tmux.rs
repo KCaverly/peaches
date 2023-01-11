@@ -103,7 +103,8 @@ impl TMUX {
                 .expect("FAILED TO ATTACH")
                 .wait();
 
-            let _i = process::Command::new("tmux").args(vec!["select-pane", "-t", "0"])
+            let _i = process::Command::new("tmux")
+                .args(vec!["select-pane", "-t", "0"])
                 .spawn()
                 .expect("FAILED TO SELECT 0 PANE")
                 .wait();
@@ -120,7 +121,8 @@ impl TMUX {
                 .expect("FAILED TO ATTACH")
                 .wait();
 
-            let _i = process::Command::new("tmux").args(vec!["select-pane", "-t", "0"])
+            let _i = process::Command::new("tmux")
+                .args(vec!["select-pane", "-t", "0"])
                 .spawn()
                 .expect("FAILED TO SELECT 0 PANE")
                 .wait();
@@ -139,7 +141,7 @@ impl TMUX {
         ]);
     }
 
-    pub fn watch_command(
+    pub fn run_hidden_command(
         session_name: &str,
         window_name: &str,
         hidden: bool,
@@ -161,7 +163,6 @@ impl TMUX {
                 "-t",
                 &format!("{session_name}:{window_name}"),
                 "-Z",
-                "watch",
                 &command,
             ]);
         } else {
@@ -171,7 +172,6 @@ impl TMUX {
                 &dir_arg,
                 "-t",
                 &format!("{session_name}:{window_name}"),
-                "watch",
                 &command,
             ]);
         }
