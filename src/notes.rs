@@ -3,6 +3,10 @@ use crate::{config::Config, tmux::TMUX};
 pub struct NotesCommand {}
 
 impl NotesCommand {
+    pub fn get_options() -> Vec<String> {
+        return vec!["Launch notes".to_string()];
+    }
+
     pub fn run(cfg: &Config) {
         let dir = &cfg.notes.directory;
         if TMUX::window_exists(&cfg.notes.session_name, "notes") {
@@ -24,5 +28,4 @@ impl NotesCommand {
             TMUX::attach_or_select_window(&cfg.notes.session_name, "notes");
         }
     }
-
 }

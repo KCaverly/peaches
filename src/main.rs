@@ -43,6 +43,9 @@ enum Commands {
     /// Launch Notes
     Notes {},
 
+    /// Launch All
+    All {},
+
     /// Manage configuration
     Config(Config),
 
@@ -108,6 +111,54 @@ fn main() {
         Commands::Notes {} => {
             let cfg = config::load_config();
             NotesCommand::run(&cfg);
+        }
+
+        Commands::All {} => {
+            let cfg = config::load_config();
+
+            let mut option_list: Vec<String> = Vec::new();
+
+            for option in DirsCommand::get_options(&cfg.directories) {
+                option_list.push(format!("DIRS:     {option}"));
+            }
+
+            for option in SSHCommand::get_options(&cfg) {
+                option_list.push(format!("SSH:      {option}"));
+            }
+
+            for option in DockerCommand::get_options() {
+                option_list.push(format!("DOCKER:   {option}"));
+            }
+
+            for option in TasksCommand::get_options() {
+                option_list.push(format!("TASKS:    {option}"));
+            }
+
+            for option in NotesCommand::get_options() {
+                option_list.push(format!("NOTES:    {option}"));
+            }
+
+            let selected = fuzzy_finder::search_options(option_list);
+
+            if selected.contains("DOCKER: ") {
+                DockerCommand::post_search_command(&selected.replace("DOCKER:   ", ""));
+            }
+
+            if selected.contains("TASKS: ") {
+                TasksCommand::run(&cfg);
+            }
+
+            if selected.contains("NOTES: ") {
+                NotesCommand::run(&cfg);
+            }
+
+            if selected.contains("DIRS: ") {
+                DirsCommand::post_search_command(&cfg, &selected.replace("DIRS:     ", ""));
+            }
+
+            if selected.contains("SSH: ") {
+                SSHCommand::post_search_command(&cfg, &selected.replace("SSH:      ", ""));
+            }
         }
 
         Commands::Config(config) => match config.command.unwrap() {

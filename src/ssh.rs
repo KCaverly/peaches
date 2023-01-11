@@ -17,7 +17,7 @@ impl SSHCommand {
         return &cfg.ssh[alias];
     }
 
-    fn get_options(cfg: &Config) -> Vec<String> {
+    pub fn get_options(cfg: &Config) -> Vec<String> {
         let mut server_list: Vec<String> = Vec::new();
 
         for (alias, details) in &cfg.ssh {
@@ -27,7 +27,7 @@ impl SSHCommand {
         return server_list;
     }
 
-    fn post_search_command(cfg: &Config, selected: &str) {
+    pub fn post_search_command(cfg: &Config, selected: &str) {
         let details = Self::get_ssh_details(cfg, selected);
 
         // Launch TMUX window for SSH Server

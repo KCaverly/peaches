@@ -4,6 +4,10 @@ use std::process;
 pub struct TasksCommand {}
 
 impl TasksCommand {
+    pub fn get_options() -> Vec<String> {
+        return vec!["Launch task manager".to_string()];
+    }
+
     pub fn run(cfg: &Config) {
         if TMUX::window_exists(&cfg.tasks.session_name, "tasks") {
             TMUX::attach_or_select_window(&cfg.tasks.session_name, "tasks");

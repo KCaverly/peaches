@@ -21,7 +21,7 @@ impl DirsCommand {
             .collect::<Vec<DirEntry>>())
     }
 
-    fn get_options(directories: &HashMap<String, ProjectDirectory>) -> Vec<String> {
+    pub fn get_options(directories: &HashMap<String, ProjectDirectory>) -> Vec<String> {
         let mut file_list: Vec<String> = Vec::new();
 
         for (_key, value) in &*directories {
@@ -60,7 +60,7 @@ impl DirsCommand {
         panic!("No project found for directory")
     }
 
-    fn post_search_command(cfg: &Config, selected: &str) {
+    pub fn post_search_command(cfg: &Config, selected: &str) {
         let details = Self::get_directory_details(cfg, selected);
         let name = selected.split("/").last().unwrap();
 

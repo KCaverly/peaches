@@ -5,7 +5,7 @@ use crate::{fuzzy_finder, tmux::TMUX};
 pub struct DockerCommand {}
 
 impl DockerCommand {
-    fn get_options() -> Vec<String> {
+    pub fn get_options() -> Vec<String> {
         let ls = process::Command::new("docker")
             .args(vec!["ps"])
             .output()
@@ -22,7 +22,7 @@ impl DockerCommand {
         return container_names;
     }
 
-    fn post_search_command(selected: &str) {
+    pub fn post_search_command(selected: &str) {
         let name = &selected.replace("-", "_");
 
         // Launch Project
