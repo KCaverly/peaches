@@ -7,7 +7,7 @@
      
 ## Why?
 
-I spend a disproportionate amount of time in the terminal on navigation. This is often low value add, repetitive work, annoying to manage manually and easily automated. `peaches` solves for this, by offering an extendable smart switcher for the terminal. Leveraging commonly loved linux tools such as `tmux`, `peaches` offers a fuzzy find experience for navigating between projects, connecting to ssh servers, connecting to docker containers, and launching common terminal applications. 
+I spend a substantial amount of time in the terminal on navigation and context switching. This is often low value add, repetitive work, annoying to manage manually and easily automated. `peaches` solves for this, by offering an extendable smart switcher for the terminal. Leveraging commonly loved linux tools such as `tmux`, `peaches` offers a fuzzy find experience for navigating between projects, connecting to ssh servers, connecting to docker containers, and launching common terminal applications. 
 
 ## Installation
 
@@ -32,8 +32,6 @@ This command will grab the latest install script from github, and update the ver
 ### `dirs`
 
 **Launches a fuzzy finder for common directories, cds to the chosen directory in a new tmux window.**
-
-TODO: Add GIF showing the primary functionality.
 
 This functionality is based around quick switching within a directory organized project structure. 
 Across my machines, I have both a 'personal' and a 'work' folder in which, I keep a series of git repositories associated with various projects.
@@ -77,11 +75,28 @@ A fuzzy finder will be generated with the following options:
 
 Lets say we then select 'project1'. A new tmux window named 'project1' would then be created inside a session named 'projects', with the active directory set to the directory chosen. If a tmux window with that session & name is already active, this tmux window will then be attached (switched) to.
 
+### `docker`
+
+**Launches a fuzzy finder with all docker containers running on host and connects to a bash shell in the chosen container in a new tmux window.**
+
+#### For example,
+
+Let's assume for currently have four individual docker containers running: api, frontend, postgres, redis.
+This will launch a fuzzy finder with the following options available:
+
+```
+api
+frontend
+postgres
+redis
+```
+
+Let's assume the api is selected.
+A new tmux pane will be created and attached to named 'api' with a bash shell connected to the docker container chosen.
+
 ### `ssh`
 
 **Launches a fuzzy finder for provided ssh server details, and connects to the ssh server in a new tmux window.**
-
-TODO: Add GIF showing the primary functionality.
 
 Especially, in an environment of remote work, you may find yourself frequently sshing into a variety of machines. Provided with ssh details and an authentication method, this command will launch a fuzzy finder for the ssh servers, and connect to the selected server inside a new tmux window.
 
