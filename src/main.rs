@@ -140,23 +140,23 @@ fn main() {
 
             let selected = fuzzy_finder::search_options(option_list);
 
-            if selected.contains("DOCKER: ") {
+            if selected.starts_with("DOCKER: ") {
                 DockerCommand::post_search_command(&selected.replace("DOCKER:   ", ""));
             }
 
-            if selected.contains("TASKS: ") {
+            if selected.starts_with("TASKS: ") {
                 TasksCommand::run(&cfg);
             }
 
-            if selected.contains("NOTES: ") {
+            if selected.starts_with("NOTES: ") {
                 NotesCommand::run(&cfg);
             }
 
-            if selected.contains("DIRS: ") {
+            if selected.starts_with("DIRS: ") {
                 DirsCommand::post_search_command(&cfg, &selected.replace("DIRS:     ", ""));
             }
 
-            if selected.contains("SSH: ") {
+            if selected.starts_with("SSH: ") {
                 SSHCommand::post_search_command(&cfg, &selected.replace("SSH:      ", ""));
             }
         }
