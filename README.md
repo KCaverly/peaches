@@ -17,16 +17,6 @@ peaches is built to run on linux primarily.
 wget https://raw.githubusercontent.com/KCaverly/peaches/main/install.sh -O - | sh
 ```
 
-## Upgrade
-
-To upgrade peaches to the latest version, please run `upgrade`.
-
-```sh
-peaches upgrade
-```
-
-This command will grab the latest install script from github, and update the version installed.
-
 ## Usage
 
 ### `dirs`
