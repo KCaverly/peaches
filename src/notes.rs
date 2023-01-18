@@ -16,14 +16,14 @@ impl NotesCommand {
             TMUX::send_keys(
                 &cfg.notes.session_name,
                 "notes",
-                &format!("cd {dir} && clear"),
+                &format!("cd {dir} && nvim"),
             );
             TMUX::run_hidden_command(
                 &cfg.notes.session_name,
                 "notes",
                 cfg.notes.run_hidden,
                 true,
-                &cfg.notes.command,
+                &format!("cd {dir} && {0}", &cfg.notes.command),
             );
             TMUX::attach_or_select_window(&cfg.notes.session_name, "notes");
         }
