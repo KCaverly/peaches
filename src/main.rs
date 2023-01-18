@@ -14,7 +14,9 @@ use docker::DockerCommand;
 use notes::NotesCommand;
 use ssh::SSHCommand;
 use std::process::exit;
+use std::str;
 use tasks::TasksCommand;
+use std::process::{Stdio,Command};
 
 #[derive(Debug, Parser)] // requires `derive` feature
 #[command(name = "peaches")]
@@ -51,6 +53,9 @@ enum Commands {
 
     /// Healthcheck
     Healthcheck {},
+
+    /// Upgrade peaches
+    Upgrade {},
 }
 
 #[derive(Debug, Args)]
@@ -184,6 +189,30 @@ fn main() {
             DockerCommand::healthcheck(true);
             TasksCommand::healthcheck(true);
             println!("\nPlease install all missing requirements from the above.");
+        }
+
+        Commands::Upgrade {} => {
+            println!("Getting new install script from peaches repository.\n");
+            let get_script = Command::new("wget")
+                .args(vec![
+                    "https://raw.githubusercontent.com/KCaverly/peaches/main/install.sh",
+                    "-O",
+                    "-",
+                ])
+                .stdout(Stdio::piped())
+                .spawn()
+                .unwrap();
+
+            println!("Installing new version of peaches\n");
+
+            let install_script = Command::new("sh")
+                .stdin(Stdio::from(get_script.stdout.unwrap()))
+                .spawn()
+                .unwrap();
+
+            let output = install_script.wait_with_output().unwrap();
+            let result = str::from_utf8(&output.stdout).unwrap();
+            println!("{}", result);
         }
     }
 }
