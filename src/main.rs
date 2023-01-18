@@ -14,9 +14,9 @@ use docker::DockerCommand;
 use notes::NotesCommand;
 use ssh::SSHCommand;
 use std::process::exit;
+use std::process::{Command, Stdio};
 use std::str;
 use tasks::TasksCommand;
-use std::process::{Stdio,Command};
 
 #[derive(Debug, Parser)] // requires `derive` feature
 #[command(name = "peaches")]
