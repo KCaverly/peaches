@@ -17,6 +17,14 @@ peaches is built to run on linux primarily.
 wget https://raw.githubusercontent.com/KCaverly/peaches/main/install.sh -O - | sh
 ```
 
+#### After Install
+
+`peaches healthcheck`
+Will evaluate if you have all the necessary dependencies for the specific functionality you are interested in.
+
+`peaches config init`
+Will generate a default config in the '~/.peaches' file.
+
 ## Usage
 
 ### `dirs`
