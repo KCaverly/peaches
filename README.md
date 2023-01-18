@@ -25,6 +25,7 @@ Will evaluate if you have all the necessary dependencies for the specific functi
 `peaches config init`
 Will generate a default config in the '~/.peaches' file.
 
+
 ## Usage
 
 ### `dirs`
@@ -147,3 +148,52 @@ There are two 'auth_methods' available, 'password' and 'ssh_key'. If you have ac
 
 However, if you do not have access to managing ssh public keys on the ssh server itself, a 'password' option is available. Within the password option, 'peaches' accomodates for both clear-text and encrypted passwords. For more details on encryption, see **HERE**. At a high-level, if encryption is chosen and a correct encrypted password is provided, this password will only be read and decrypted at connection time, and never stored in memory.
 
+### `all`
+
+**Launches a fuzzy finder for common directories, ssh hosts, docker containers, notes and tasks.**
+
+This functionality groups all the functionality provided across peaches into a single function call.
+
+Assume we have the following projects picked up in the 'dirs' command:
+
+```
+/home/user/personal/
+-- /home/user/personal/project1/
+-- /home/user/personal/project2/
+-- /home/user/personal/project3/
+-- /home/user/personal/.hidden_dir/
+```
+
+Assume we have the following ssh projects setup in our '.peaches' config:
+
+```
+prod: prod_user@prod-server
+dev: dev_user@dev-server
+dev_admin: admin@dev-server
+```
+
+Assume we have the following four docker containers running on our current system.
+
+```
+api
+frontend
+postgres
+redis
+```
+
+The all command will then launch the following items in a fuzzy finder:
+
+```
+DIRS:     /home/user/personal/project1/
+DIRS:     /home/user/personal/project2/
+DIRS:     /home/user/personal/project3/
+SSH:      prod: prod_user@prod-server
+SSH:      dev: dev_user@dev-server
+SSH:      dev_admin: admin@dev-server
+DOCKER:   api
+DOCKER:   frontend
+DOCKER:   postgres
+DOCKER:   redis
+```
+
+Selecting any of the above, will run the resultant functionality (dirs, ssh, docker) with the chosen path/ssh host or docker container.
