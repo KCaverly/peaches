@@ -115,6 +115,8 @@ run_hidden = true
         } else {
             println!("Closing without generating config!");
         }
+    } else {
+        fs::write(path_clone, DEFAULT_CONFIG).expect("Unable to write file");
     }
 }
 
