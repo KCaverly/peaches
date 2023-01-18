@@ -162,10 +162,18 @@ fn main() {
         }
 
         Commands::Config(config) => match config.command.unwrap() {
-            ConfigCommands::Init {} => {}
+            ConfigCommands::Init {} => {
+                config::generate_config();
+            }
 
             ConfigCommands::Encrypt { password } => {
-                println!("Password {:?}", password);
+                if password.is_some() {
+                    let clear_pw = password.unwrap();
+                    println!("Password {:?}", clear_pw);
+                    println!("Encrypted {:?}", config::Config::encrypt(&clear_pw));
+                } else {
+                    println!("Please pass password to encrypt.");
+                }
             }
         },
 

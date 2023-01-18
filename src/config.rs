@@ -1,6 +1,7 @@
+use casual;
 use magic_crypt::{new_magic_crypt, MagicCryptTrait};
 use serde::Deserialize;
-use std::{collections::HashMap, env, fs};
+use std::{collections::HashMap, env, fs, path::PathBuf};
 use toml;
 
 #[derive(Debug, Deserialize)]
@@ -90,8 +91,12 @@ pub fn generate_config() {
 
     [ssh.default]
     host = "127.0.0.1"
-    auth_method = "password"
-    encrypted = "crypt:"
+    auth_method = "none"
+    username = "testuser"
+    password = "testpassword"
+
+[tasks]
+session_name = "org"
 
 [notes]
 session_name = "org"
@@ -102,7 +107,15 @@ run_hidden = true
 "#;
 
     let peaches_path = Config::get_path();
-    fs::write(peaches_path, DEFAULT_CONFIG).expect("Unable to write file");
+    let path_clone = peaches_path.clone();
+
+    if PathBuf::from(peaches_path).exists() {
+        if casual::confirm(".peaches config already exists. Would you like to overwrite?") {
+            fs::write(path_clone, DEFAULT_CONFIG).expect("Unable to write file");
+        } else {
+            println!("Closing without generating config!");
+        }
+    }
 }
 
 pub fn load_config() -> Config {

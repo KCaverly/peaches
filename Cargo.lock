@@ -112,6 +112,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "14c189c53d098945499cdfa7ecc63567cf3886b3332b312a5b4585d8d3a6a610"
 
 [[package]]
+name = "casual"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "02bac00d171e78bbd71fe323666881647f18ce2a6c7460e9d1baddeefa3c3420"
+
+[[package]]
 name = "cc"
 version = "1.0.77"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -833,6 +839,7 @@ checksum = "9b7820b9daea5457c9f21c69448905d723fbd21136ccf521748f23fd49e723ee"
 name = "peaches"
 version = "0.4.4"
 dependencies = [
+ "casual",
  "clap 4.0.29",
  "itertools",
  "magic-crypt",
