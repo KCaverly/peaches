@@ -15,8 +15,8 @@ pub struct Config {
 impl Config {
     pub fn get_path() -> String {
         let mut peaches_path: String;
-        if env::var("PEACHES_PATH").is_ok() {
-            peaches_path = env::var("PEACHES_PATH").ok().unwrap();
+        if env::var("XDG_CONFIG_HOME").is_ok() {
+            peaches_path = env::var("XDG_CONFIG_HOME").ok().unwrap();
         } else {
             peaches_path = env::var("HOME").ok().unwrap();
             peaches_path.push_str("/.peaches");
