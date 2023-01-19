@@ -106,7 +106,7 @@ session_name = "org"
 session_name = "org"
 directory = "~/notes"
 command = "emanote"
-run_hidden = true
+run_hidden = ""
 
 "#;
 
