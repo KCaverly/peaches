@@ -83,7 +83,7 @@ fn main() {
                 exit(0);
             }
 
-            let cfg = config::load_config();
+            let cfg = config::Config::load();
             DirsCommand::run(&cfg);
         }
 
@@ -92,7 +92,7 @@ fn main() {
                 exit(0);
             }
 
-            let cfg = config::load_config();
+            let cfg = config::Config::load();
             SSHCommand::run(&cfg);
         }
 
@@ -109,17 +109,17 @@ fn main() {
                 exit(0);
             }
 
-            let cfg = config::load_config();
+            let cfg = config::Config::load();
             TasksCommand::run(&cfg);
         }
 
         Commands::Notes {} => {
-            let cfg = config::load_config();
+            let cfg = config::Config::load();
             NotesCommand::run(&cfg);
         }
 
         Commands::All {} => {
-            let cfg = config::load_config();
+            let cfg = config::Config::load();
 
             let mut option_list: Vec<String> = Vec::new();
 
@@ -168,7 +168,7 @@ fn main() {
 
         Commands::Config(config) => match config.command.unwrap() {
             ConfigCommands::Init {} => {
-                config::generate_config();
+                config::Config::init();
             }
 
             ConfigCommands::Encrypt { password } => {

@@ -19,11 +19,10 @@ impl Config {
             peaches_path = env::var("PEACHES_PATH").ok().unwrap();
         } else if env::var("XDG_CONFIG_HOME").is_ok() {
             peaches_path = env::var("XDG_CONFIG_HOME").ok().unwrap();
-        }
-        else {
+        } else {
             peaches_path = env::var("HOME").ok().unwrap();
         }
-        
+
         peaches_path.push_str("/.peaches");
         return peaches_path;
     }
@@ -48,6 +47,58 @@ impl Config {
         } else {
             panic!("Please set encryption key as 'PEACHES_KEY' in environment variables.");
         }
+    }
+
+    pub fn init() {
+        const DEFAULT_CONFIG: &str = r#"
+[directories]
+    [directories.default]
+    session_name = "default"
+    directory = "/"
+    min_depth = 1
+    max_depth = 1
+    include_hidden = false
+
+[ssh]
+
+    [ssh.default]
+    host = "127.0.0.1"
+    auth_method = "none"
+    username = "testuser"
+    password = "testpassword"
+
+[tasks]
+session_name = "org"
+
+[notes]
+session_name = "org"
+directory = "~/notes"
+command = "emanote"
+run_hidden = ""
+
+"#;
+
+        let peaches_path = Self::get_path();
+        let path_clone = peaches_path.clone();
+
+        if PathBuf::from(peaches_path).exists() {
+            if casual::confirm(".peaches config already exists. Would you like to overwrite?") {
+                fs::write(path_clone, DEFAULT_CONFIG).expect("Unable to write file");
+            } else {
+                println!("Closing without generating config!");
+            }
+        } else {
+            fs::write(path_clone, DEFAULT_CONFIG).expect("Unable to write file");
+        }
+    }
+
+    pub fn load() -> Self {
+        let peaches_path = Self::get_path();
+
+        let config_string: String = fs::read_to_string(peaches_path).ok().unwrap();
+
+        let config: Self = toml::from_str(&config_string).unwrap();
+        return config;
     }
 }
 
@@ -79,56 +130,4 @@ pub struct Notes {
     pub directory: String,
     pub command: String,
     pub run_hidden: bool,
-}
-
-pub fn generate_config() {
-    const DEFAULT_CONFIG: &str = r#"
-[directories]
-    [directories.default]
-    session_name = "default"
-    directory = "/"
-    min_depth = 1
-    max_depth = 1
-    include_hidden = false
-
-[ssh]
-
-    [ssh.default]
-    host = "127.0.0.1"
-    auth_method = "none"
-    username = "testuser"
-    password = "testpassword"
-
-[tasks]
-session_name = "org"
-
-[notes]
-session_name = "org"
-directory = "~/notes"
-command = "emanote"
-run_hidden = ""
-
-"#;
-
-    let peaches_path = Config::get_path();
-    let path_clone = peaches_path.clone();
-
-    if PathBuf::from(peaches_path).exists() {
-        if casual::confirm(".peaches config already exists. Would you like to overwrite?") {
-            fs::write(path_clone, DEFAULT_CONFIG).expect("Unable to write file");
-        } else {
-            println!("Closing without generating config!");
-        }
-    } else {
-        fs::write(path_clone, DEFAULT_CONFIG).expect("Unable to write file");
-    }
-}
-
-pub fn load_config() -> Config {
-    let peaches_path = Config::get_path();
-
-    let config_string: String = fs::read_to_string(peaches_path).ok().unwrap();
-
-    let config: Config = toml::from_str(&config_string).unwrap();
-    return config;
 }
