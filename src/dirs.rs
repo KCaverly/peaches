@@ -38,7 +38,7 @@ impl DirsCommand {
                         }
                     })
                     .map(|x| x.to_string())
-                    .filter(|x| !x.contains(".git"))
+                    .filter(|x| !x.contains(".git/"))
                     .filter(|x| !x.contains("bin"))
                     .collect();
 
