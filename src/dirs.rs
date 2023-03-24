@@ -62,15 +62,15 @@ impl DirsCommand {
 
     pub fn post_search_command(cfg: &Config, selected: &str) {
         let details = Self::get_directory_details(cfg, selected);
-        let name = selected.split("/").last().unwrap();
+        let name = selected.split("/").last().unwrap().replace(".", "_");
 
-        TMUX::create_window(&details.session_name, name);
+        TMUX::create_window(&details.session_name, &name);
         TMUX::send_keys(
             &details.session_name,
-            name,
+            &name,
             &format!("cd {selected} && clear"),
         );
-        TMUX::attach_or_select_window(&details.session_name, name);
+        TMUX::attach_or_select_window(&details.session_name, &name);
     }
 
     pub fn run(cfg: &Config) {
